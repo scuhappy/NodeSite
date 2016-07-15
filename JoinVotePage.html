@@ -1,0 +1,61 @@
+<html>
+<a href = "/index.html"><head>MainPage</head></a>
+
+<body style="background:#7ED87C;">
+<p  >Join Vote</p>
+<form action="SubmitVote">
+<div>
+<label for="firstname" class="col-sm-2 control-label" id="Person1" >Person1 Content</label>
+<input type="text" name="score1"/>
+<label id="score1">score1</label>
+</div>
+<div>
+<label for="firstname" class="col-sm-2 control-label" id="Person2" >Person1 Content</label>
+<input type="text" name="score2"/>
+<label id="score2">score2</label>
+</div>
+<div>
+<label for="firstname" class="col-sm-2 control-label" id="Person3" >Person1 Content</label>
+<input type="text" name="score3"/>
+<label id="score3">score3</label>
+</div>
+<div>
+<input type="submit" value="submit score"/>
+</div>
+</form>
+
+</body>
+<script>
+var xmlhttp=new XMLHttpRequest();
+var GetData = function(){
+	xmlhttp.onreadystatechange=function()
+	  {
+	  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+			var obj = JSON.parse(xmlhttp.responseText);
+			document.getElementById("Person1").innerHTML=obj.Person1;
+			document.getElementById("Person2").innerHTML=obj.Person2;
+			document.getElementById("Person3").innerHTML=obj.Person3;
+		}
+	  }
+	xmlhttp.open("GET","GetVoteContent",true);
+	xmlhttp.send();
+};
+var GetScore = function(){
+	xmlhttp.onreadystatechange=function()
+	  {
+	  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+			var obj = JSON.parse(xmlhttp.responseText);
+			document.getElementById("score1").innerHTML=obj.score1;
+			document.getElementById("score2").innerHTML=obj.score2;
+			document.getElementById("score3").innerHTML=obj.score3;
+		}
+	  }
+	xmlhttp.open("GET","GetScore",true);
+	xmlhttp.send();
+};
+GetData();
+GetScore();
+</script>
+</html>

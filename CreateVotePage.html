@@ -1,0 +1,89 @@
+<html>
+<head>
+<link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+
+Create Vote Page
+</head>
+<body style="background:#7ED87C;">
+<p>Create Vote</p>
+<p>
+<button type="button" class="btn btn-default" onclick="AddPerson()">Add Person</button>
+<button type="button" class="btn btn-default" onclick="RemovePerson()">Remove Person</button>
+</p>
+<p >
+	<p id="FormContent"> 
+	   <p class="Person">
+			<input type="checkbox" class="check" > 
+		    <Label>Name:  </Label>
+			<input  class ="PersonName" style="width:100px;" value="88"/>
+			<Label>Content:  </Label>
+			<input type="text" class="PersonContent" style="width:300px;" placeholder="Please input Content" value="99"/>
+	   </p>
+	   
+	   <p class="Person"> 
+			<input type="checkbox" class="check" > 
+			<Label>Name:  </Label>
+			<input  class ="PersonName" style="width:100px;"  value="88"/>
+			<Label>Content:  </Label>
+			<input type="text"  class="PersonContent"  style="width:300px;"placeholder="Please input Content" value="99"/>
+	   </p>
+		<p class="Person">
+			<input type="checkbox" class="check" > 
+			<Label>Name:  </Label>
+			<input  class ="PersonName" style="width:100px;"  value="88"/>
+			<Label>Content:  </Label>
+			<input type="text" class="PersonContent" style="width:300px;" placeholder="Please input Content" value="99"/>
+	   </p>
+	   
+   </p>
+   <div >
+         <button type="submit" class="btn btn-default" onclick="SubmitVoteContent()">Submit</button>
+   </div>
+</p>
+</body>
+<script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+<script>
+var addInput = "<p class='Person'><input type='checkbox' class='check'> <Label>Name:</Label> <input  class ='PersonName' style='width:100px;'/> <Label>Content:  </Label> <input type='text' class='PersonContent' style='width:300px;' placeholder='Please input Content'/></p>"
+var AddPerson = function(){
+	console.log("add person");
+	$("#FormContent").append(addInput);
+	RefreshListen();
+};
+var RemovePerson = function(){
+	$(".check").each(function(){
+		if($(this).attr("checked")){
+			$(this).parent().remove();
+		}
+	});
+};
+var RefreshListen=function(){
+  $(".check").click(function(){
+    if($(this).attr("checked")){
+		$(this).attr("checked","false");
+		}else{
+			$(this).attr("checked","true");
+		}
+  });
+};
+function GetJsonData(){
+	var Json={'Person':[]};
+	$(".Person").each(function(){
+		var Person={'PersonName':'','PersonContent':''};
+		Person.PersonName = $(this).children("input.PersonName").first().attr("value");
+		Person.PersonContent = $(this).children("input.PersonContent").first().attr("value");
+		console.log(Person);
+		Json.Person[Json.Person.length]=Person;
+	});
+	console.log(Json);
+	return Json;
+
+};
+var SubmitVoteContent = function(){
+	console.log("Ajax submit!");
+	$.ajax({
+	url:"PostVote",
+	data:GetJsonData()
+	});
+};
+</script>
+</html>
