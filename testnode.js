@@ -1,82 +1,69 @@
 http =  require('http');
 var fs = require('fs');
 var url = require('url');
+var nodemailer  = require("nodemailer");
 
 
-var vote={};
-var Score;
+var user = '244241928@qq.com'
+  , pass = 'Google2015'
+  ;
+
+var vote;
 var flag =0;
-/**
- * 照样输出json格式的数据
- * @param query
- * @param res
- */
-var writeOut = function (query, res) {
-    res.write(JSON.stringify(query));
-    res.end();
-}
-
-
+var VoteTime=0;
+var smtpTransport = nodemailer.createTransport({
+      service: "QQ"
+    , auth: {
+        user: user,
+        pass: pass
+    }
+  });
+smtpTransport.sendMail({
+    from    : 'Kris<' + user + '>'
+  , to      : '<ychen@thorlabs.com>'
+  , subject : 'this is s test E-Mail'
+  , html    : 'this is s test E-Mail <br> '
+}, function(err, res) {
+    console.log(err, res);
+});
+  
 http.createServer(function(request,response){
-	var pathname = url.parse(request.url).pathname;
-	 console.log("Request for " + pathname + " received.");
-	 if(pathname=="/PostVote")//do with form
-	 {
-		  vote = url.parse(request.url, true).query;
-          console.log("post vote "+JSON.stringify(vote));
-		  fs.readFile("index.html",function(err,data){
-			if(err){
-				console.log(err);
-				response.writeHead(404,{'content-Type':'text/html'})
+	//POST method
+	 var MessageType="";
+	request.on('data', function(chunk){   
+		var obj = JSON.parse(chunk);
+		console.log("=========="+obj.MessageType);
+		MessageType = obj.MessageType;
+	  if(MessageType=="CreateVoteMSG")
+	   {
+		  vote = obj;
+		  console.log(vote.VotePersonNumber);
+		  response.end();
+	   }
+	   else if(MessageType == "SendScore")
+	   {
+		    for(var i=0;i<vote.Person.length;i++)
+			{
+				vote.Person[i].PersonScore = parseInt(vote.Person[i].PersonScore) + parseInt(obj.Person[i].PersonScore);
+				console.log(vote.Person[i].PersonScore);
 			}
-			else{
-				response.writeHead(200,{'Content-Type':'text/html'});
-				response.write(data,toString());
-			}
+			VoteTime++;
 			response.end();
-		  });
-	 }
-	 else if(pathname=="/GetVoteContent"){//send data
-	 console.log("req content received!");
-	//	var contentobj = JSON.parse(vote);
-	//	var Person1 = contentobj.Person1;
-	//	console.log(Person1);
-		response.writeHead(200,{'Content-Type':'text/plain'});
-		response.write(vote);
-		response.end();
-	 }
-	 else if(pathname=="/SubmitVote"){
-		 var query = url.parse(request.url, true).query;
-		 console.log("submit score!"+query.score1);
-		 if(flag==0)
-		 {
-			Score = query;
-			flag=1;
-		 }else{
-			Score.score1 = parseInt(Score.score1) + parseInt(query.score1);
-			Score.score2 = parseInt(Score.score2) + parseInt(query.score2);
-			Score.score3 = parseInt(Score.score3) + parseInt(query.score3);
-		 }
+	   }
+	});
+	request.on('end',function(){  
 
-		
-		 fs.readFile("JoinVotePage.html",function(err,data){
-			if(err){
-				console.log(err);
-				response.writeHead(404,{'content-Type':'text/html'});
-			}else{
-				response.writeHead(200,{'Content-Type':'text/html'});
-				response.write(data,toString());
-			}
-			response.end();
-		});
-	 }
-	 else if(pathname=="/GetScore"){
-		console.log("Get score received!");
-		response.writeHead(200,{'Content-Type':'text/plain'});
-		response.write(JSON.stringify(Score));
+    });
+	
+	//GET Method
+	var pathname = url.parse(request.url).pathname;
+	console.log("Request for " + pathname + " received.");
+	if(pathname=="/GetVoteContent"){//send data
+		console.log("***********Write vote content");
+		response.write(JSON.stringify(vote));
 		response.end();
-	 }
-	 else
+	}
+	else
 	 {
 		 console.log(pathname);
 		 if(pathname=="/")
@@ -89,7 +76,7 @@ http.createServer(function(request,response){
 				response.writeHead(404,{'content-Type':'text/html'});
 			}else{
 				response.writeHead(200,{'Content-Type':'text/html'});
-				response.write(data,toString());
+				response.write(data.toString());
 			}
 			response.end();
 		});

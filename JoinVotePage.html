@@ -1,61 +1,97 @@
 <html>
-<a href = "/index.html"><head>MainPage</head></a>
+
+<head>
+<link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+</head>
 
 <body style="background:#7ED87C;">
-<p  >Join Vote</p>
-<form action="SubmitVote">
+<a href = "/index.html"><h2>MainPage</h2></a>
+<h3  >Join Vote</h3>
+<p class="text-danger"><b><em>Score Rules:
+<li class="text-danger">1, All the input number should between 0~9</li>
+<li class="text-danger">2, You should input one and only one 9 score,one or more than one 0 score. And other score .</li>
+</em></b></P>
+
+<p action="SubmitVote" id = "FormScore"></p>
 <div>
-<label for="firstname" class="col-sm-2 control-label" id="Person1" >Person1 Content</label>
-<input type="text" name="score1"/>
-<label id="score1">score1</label>
+<input type="submit" value="submit score" class="btn btn-lg btn-default" onclick="SendScore()"/>
 </div>
-<div>
-<label for="firstname" class="col-sm-2 control-label" id="Person2" >Person1 Content</label>
-<input type="text" name="score2"/>
-<label id="score2">score2</label>
-</div>
-<div>
-<label for="firstname" class="col-sm-2 control-label" id="Person3" >Person1 Content</label>
-<input type="text" name="score3"/>
-<label id="score3">score3</label>
-</div>
-<div>
-<input type="submit" value="submit score"/>
-</div>
-</form>
 
 </body>
+<script src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
 <script>
-var xmlhttp=new XMLHttpRequest();
+var addInput = "<div><label for='firstname' class='PersonContentLabel'>Person Content</label>	<input class='PersonScoreInput' type='text' style='width:50px;' />	<label class='PersonScoreLabel'>score</label></div>";
+var VoteContent;
+
+var AddPerson = function(){
+	console.log("add person");
+	$("#FormScore").append(addInput);
+};
 var GetData = function(){
-	xmlhttp.onreadystatechange=function()
-	  {
-	  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+	$.get("GetVoteContent",function(result){
+		VoteContent = JSON.parse(result);
+		for(var i=0;i<VoteContent.Person.length;i++)
 		{
-			var obj = JSON.parse(xmlhttp.responseText);
-			document.getElementById("Person1").innerHTML=obj.Person1;
-			document.getElementById("Person2").innerHTML=obj.Person2;
-			document.getElementById("Person3").innerHTML=obj.Person3;
+			AddPerson();
 		}
-	  }
-	xmlhttp.open("GET","GetVoteContent",true);
-	xmlhttp.send();
-};
-var GetScore = function(){
-	xmlhttp.onreadystatechange=function()
-	  {
-	  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		console.log($(".PersonContentLabel").length);
+		for(var i=0;i<VoteContent.Person.length;i++)
 		{
-			var obj = JSON.parse(xmlhttp.responseText);
-			document.getElementById("score1").innerHTML=obj.score1;
-			document.getElementById("score2").innerHTML=obj.score2;
-			document.getElementById("score3").innerHTML=obj.score3;
+			$(".PersonContentLabel")[i].innerHTML ="Name : "+VoteContent.Person[i].PersonName+" /  Post Content : "+VoteContent.Person[i].PersonContent+" Score : ";
+			$(".PersonScoreLabel")[i].innerHTML= VoteContent.Person[i].PersonScore;
 		}
-	  }
-	xmlhttp.open("GET","GetScore",true);
-	xmlhttp.send();
+	});
 };
+var SendScore = function(){
+		VoteContent.MessageType ="SendScore";
+		var flag9=0;
+		var flag0 = 0;
+		for(var i=0;i<VoteContent.Person.length;i++)
+		{
+			if($(".PersonScoreInput").eq(i).val()=="")
+			{
+				alert("Please input score for all the people!");
+				return;
+			}
+			else if(parseInt($(".PersonScoreInput").eq(i).val())>9 || parseInt($(".PersonScoreInput").eq(i).val())<0)
+			{
+				alert("Score should be between 0~9!");
+				return;
+			}
+			else if(parseInt($(".PersonScoreInput").eq(i).val())==9)
+			{
+				if(flag9==0)
+				{
+					flag9=1;
+				}
+				else 
+				{
+					alert("Just allow one '9' in scores!");
+					return ;
+				}
+			}
+			else if(parseInt($(".PersonScoreInput").eq(i).val())==0)
+			{
+				flag0=1;
+			}
+			
+			VoteContent.Person[i].PersonScore= parseInt($(".PersonScoreInput").eq(i).val());
+			console.log(VoteContent.Person[i].PersonScore);
+		}
+		if(flag9==0)//Do not have one 9
+		{
+			alert("You should input at least one 9 score!");
+			return;
+		}
+		else if(flag0==0)
+		{
+			alert("You should input at least one 0 score!");
+			return;
+		}
+		$.post("SendScore",JSON.stringify(VoteContent),function(result){
+			window.location.href ="JoinVotePage.html";
+		});
+}
 GetData();
-GetScore();
 </script>
 </html>
