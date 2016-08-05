@@ -11,6 +11,8 @@ var user = '244241928@qq.com'
 var vote;
 var flag =0;
 var VoteTime=0;
+
+  /*
 var smtpTransport = nodemailer.createTransport({
       service: "QQ"
     , auth: {
@@ -18,7 +20,8 @@ var smtpTransport = nodemailer.createTransport({
         pass: pass
     }
   });
-smtpTransport.sendMail({
+
+var SendMail = smtpTransport.sendMail({
     from    : 'Kris<' + user + '>'
   , to      : '<ychen@thorlabs.com>'
   , subject : 'this is s test E-Mail'
@@ -26,10 +29,15 @@ smtpTransport.sendMail({
 }, function(err, res) {
     console.log(err, res);
 });
-  
+  */
+var CheckUser =function(){
+	return 1;
+}
+	var UserInfo={"UserName":"","Password":""};
 http.createServer(function(request,response){
 	//POST method
-	 var MessageType="";
+	var MessageType="";
+
 	request.on('data', function(chunk){   
 		var obj = JSON.parse(chunk);
 		console.log("=========="+obj.MessageType);
@@ -50,6 +58,15 @@ http.createServer(function(request,response){
 			VoteTime++;
 			response.end();
 	   }
+	   else if(MessageType=="UserLogin")
+	   {
+		   if(CheckUser()>0)
+		   {
+			   console.log("User name "+obj.UserName);
+			   UserInfo = obj;
+			   response.end();
+		   }
+	   }
 	});
 	request.on('end',function(){  
 
@@ -61,6 +78,12 @@ http.createServer(function(request,response){
 	if(pathname=="/GetVoteContent"){//send data
 		console.log("***********Write vote content");
 		response.write(JSON.stringify(vote));
+		response.end();
+	}
+	else if(pathname == "/GetUserInfo")
+	{
+		console.log("*******Write user info"+UserInfo.UserName);
+		response.write(UserInfo.UserName);
 		response.end();
 	}
 	else
