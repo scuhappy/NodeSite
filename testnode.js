@@ -5,7 +5,39 @@ var nodemailer  = require("nodemailer");
 var express = require('express');
 var app = express();
 
+var user = '244241928@qq.com'
+  , pass = 'Google2015'
+  ;
+
+var vote;
+var flag =0;
+var VoteTime=0;
+
+function getClientIp(req) {
+        return req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
+    };
+var CheckUser =function(){
+	return 1;
+}
+var UserInfo={"UserName":"","Password":""};
+
+app.use(express.static(__dirname + '/'));
+
 app.get('/.*',function(request,response){
+	
+	console.log("clinet ip : "+getClientIp(request));
+	
+	// Get client Cookie
+    var Cookies = {};
+    request.headers.cookie && request.headers.cookie.split(';').forEach(function( Cookie ) {
+        var parts = Cookie.split('=');
+        Cookies[ parts[ 0 ].trim() ] = ( parts[ 1 ] || '' ).trim();
+    });
+    console.log(Cookies);
+	
 	//GET Method
 	var pathname = request.path;
 	console.log("Request for " + pathname + " received.");
@@ -42,80 +74,40 @@ app.get('/.*',function(request,response){
 
 
 app.post('PostVote',function(request,response){
-	var obj = JSON.parse(request.body);
-		console.log("=========="+obj.MessageType);
-		MessageType = obj.MessageType;
-	  if(MessageType=="CreateVoteMSG")
-	   {
-		  vote = obj;
-		  console.log(vote.VotePersonNumber);
-		  response.end();
-	   }
-	   else if(MessageType == "SendScore")
-	   {
-		    for(var i=0;i<vote.Person.length;i++)
-			{
-				vote.Person[i].PersonScore = parseInt(vote.Person[i].PersonScore) + parseInt(obj.Person[i].PersonScore);
-				console.log(vote.Person[i].PersonScore);
-			}
-			VoteTime++;
-			response.end();
-	   }
-	   else if(MessageType=="UserLogin")
-	   {
-		   if(CheckUser()>0)
-		   {
-			   console.log("&&&&&&&&&&&&&&&&&&&User name "+obj.UserName);
-			   UserInfo = obj;
-				// Set a cookie to client
-				response.writeHead(200, {
-				'Set-Cookie': ["aaa=eval(obj.UserName)","ccc=ddd","eee=fff"],
-				'Content-Type': 'text/plain'
-				});
-			   response.end();
-		   }
-	   }
+		var obj = JSON.parse(request.body);
+		vote = obj;
+		console.log(vote.VotePersonNumber);
+		response.end();
 })
-var user = '244241928@qq.com'
-  , pass = 'Google2015'
-  ;
+app.post('SendScore',function(request,response){
+	var obj = JSON.parse(request.body);
+	for(var i=0;i<vote.Person.length;i++)
+		{
+			vote.Person[i].PersonScore = parseInt(vote.Person[i].PersonScore) + parseInt(obj.Person[i].PersonScore);
+			console.log(vote.Person[i].PersonScore);
+		}
+	VoteTime++;
+	response.end();
+})
+app.post('Login',function(request,response){
+	var obj = JSON.parse(request.body);
+	if(CheckUser()>0)
+		{
+			console.log("&&&&&&&&&&&&&&&&&&&User name "+obj.UserName);
+			UserInfo = obj;
+			// Set a cookie to client
+			response.writeHead(200, {
+			'Set-Cookie': ["aaa=eval(obj.UserName)","ccc=ddd","eee=fff"],
+			'Content-Type': 'text/plain'
+			});
+			response.end();
+		}
+})
+var server = app.listen(80,"127.0.0.1", function () {
 
-var vote;
-var flag =0;
-var VoteTime=0;
+  var host = server.address().address;
+  var port = server.address().port;
 
-function getClientIp(req) {
-        return req.headers['x-forwarded-for'] ||
-        req.connection.remoteAddress ||
-        req.socket.remoteAddress ||
-        req.connection.socket.remoteAddress;
-    };
-var CheckUser =function(){
-	return 1;
-}
-var UserInfo={"UserName":"","Password":""};
-http.createServer(function(request,response){
-	
-	console.log("clinet ip : "+getClientIp(request));
-	
-	// Get client Cookie
-    var Cookies = {};
-    request.headers.cookie && request.headers.cookie.split(';').forEach(function( Cookie ) {
-        var parts = Cookie.split('=');
-        Cookies[ parts[ 0 ].trim() ] = ( parts[ 1 ] || '' ).trim();
-    });
-    console.log(Cookies);
+  console.log("listen on  http://%s:%s", host, port);
 
-	//POST method
-	var MessageType="";
-	request.on('data', function(chunk){   
-		
-	});
-	request.on('end',function(){  
-
-    });
-	
-
-}).listen(80,"0.0.0.0");
-
-console.log('Server running at http://127.0.0.1:80/');
+})

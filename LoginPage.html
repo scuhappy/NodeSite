@@ -52,7 +52,7 @@
 var LoginFunc = function(){
 	var UserLogin={"MessageType":"UserLogin","UserName":$("#name").val(),"Password":$("#password").val()};
 	$.post("Login",JSON.stringify(UserLogin),function(result){
-		window.location.href ="/";
+		window.location.href ="/index.html";
 	});
 };
 </script>
