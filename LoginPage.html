@@ -50,9 +50,20 @@
 </body>
 <script>
 var LoginFunc = function(){
-	var UserLogin={"MessageType":"UserLogin","UserName":$("#name").val(),"Password":$("#password").val()};
-	$.post("Login",JSON.stringify(UserLogin),function(result){
-		window.location.href ="/index.html";
+        var UserLogin={
+        "UserName":$("#name").val(),
+        "Password":$("#Password").val()
+        };
+
+	$.post("Login",UserLogin,function(result){
+                if(result=="Success")
+                {
+                    window.location.href ="/index.html";
+                }
+                else if (result == "Error")
+                {
+                    alert("Wrong password or user name does not exist!");
+                }
 	});
 };
 </script>
