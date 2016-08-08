@@ -37,6 +37,9 @@
 			<p id="CreateVoteBtn" >
 				<button type="button" class="btn btn-lg btn-default" onclick="window.location.href='CreateVotePage.html'">Create Vote</button>
 			</p>
+			<p id="ViewScoreBtn">
+				<button type="button" class="btn btn-lg btn-default" onclick="window.location.href='ScoreView.html'">ViewScore</button>
+			</p>
 			<p id="JoinVoteBtn">
 				<button type="button" class="btn btn-lg btn-default" onclick="window.location.href='JoinVotePage.html'">Join a Vote</button>
 			</p>
@@ -61,9 +64,11 @@
 			if(obj.Role=="admin")
 			{
 				$("#CreateVoteBtn").removeAttr("hidden");
+				$("#ViewScoreBtn").removeAttr("hidden");
 				$("#JoinVoteBtn").attr("hidden","hidden");
 			}else{
 				$("#CreateVoteBtn").attr("hidden","hidden");
+				$("#ViewScoreBtn").attr("hidden","hidden");
 				$("#JoinVoteBtn").removeAttr("hidden");
 			}
 			

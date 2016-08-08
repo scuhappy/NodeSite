@@ -12,7 +12,8 @@ app.use(cookieParser());
 app.use(express.static(__dirname + '/'));
 app.use(bodyParser.urlencoded({extended:false}));
 
-var vote;
+var vote={"VoteNumber":"","Person":[],"VoteCreateDate":""};
+var Votes={"Votes":[],"VotesNumber":"0"};
 var flag =0;
 
 var UserList = {
@@ -58,8 +59,9 @@ app.get('/',function(request,response){
 	
 });
 app.get('/GetVoteContent',function(request,response){
-    console.log("***********Write vote content"+JSON.stringify(vote));
-    response.write(JSON.stringify(vote));
+	var _vote = Votes.Votes[Votes.Votes.length-1];//get the latest vote;
+	console.log(JSON.stringify(_vote));
+    response.write(JSON.stringify(_vote));
     response.end();
 })
 app.get('/GetVoteStatus',function(request,response){
@@ -99,6 +101,13 @@ app.get('/LogOut',function(request,response){
 app.post('/PostVote',urlencodeParser,function(request,response){
 	console.log("*******Post vote   "+JSON.stringify(request.body));
     vote = JSON.parse(request.body.data);
+	vote.VoteNumber = Votes.Votes.length;
+	var date = new Date();
+	console.log("Current time "+date);
+	vote.VoteCreateDate = date;
+	Votes.Votes[Votes.Votes.length]=vote;
+	Votes.VotesNumber = Votes.Votes.length;
+	console.log("********"+ Votes.Votes[0].VoteNumber);
     response.end();
 })
 app.post('/SendScore',urlencodeParser,function(request,response){
