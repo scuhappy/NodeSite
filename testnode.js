@@ -146,8 +146,8 @@ app.post('/Login',urlencodeParser,function(request,response){
     }
 })
 app.post('/SignUp',urlencodeParser,function(request,response){
-	console.log("Sign Up Received!");
-	var obj = JSON.parse(request.data);
+	console.log("*************Sign Up Received! " +  request.body.data);
+	var obj = JSON.parse(request.body.data);
 	for(var i=0;i<UserList.Users.length;i++)
 	{
 		if(obj.UserName == UserList.Users[i].UserName)

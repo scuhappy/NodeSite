@@ -11,6 +11,7 @@
 <button type="button" class="btn btn-default" onclick="RemovePerson()">Remove Person</button>
 </p>
 <p >
+
 <table class="table" >
 <thread>
 	<tr>
@@ -77,20 +78,22 @@
 </p>
 </body>
 <script src="node_modules/jquery/dist/jquery.min.js"></script>
+<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 <script>
-var addInput = "<tr class='Person'><td><input type='checkbox' class='check'> </td><td><input  class ='PersonName' style='width:100px;'/></td><td><input type='text' class='PersonContent' style='width:300px;' placeholder='Please input Content'/></td></tr>"
+var addInput = "<tr class='Person'><td><input type='checkbox' class='check'></td><td><div class='dropdown'><button type='button' class='btn dropdown-toggle' id='dropdownMenu1' data-toggle='dropdown'>PersonName<span class='caret'></span></button><ul class='dropdown-menu' role='menu' aria-labelledby='dropdownMenu1'><li role='presentation'> <a role='menuitem' tabindex='-1' href='#'>ychen</a></li></ul></div></td><td><input type='text' class='PersonContent' style='width:300px;' placeholder='Please input Content'/></td></tr>"
 var initContent =function(){
 	
 };
 var AddPerson = function(){
 	console.log("add person");
 	$("#FormContent").append(addInput);
+	$(".DragMenu")
 	RefreshListen();
 };
 var RemovePerson = function(){
 	$(".check").each(function(){
 		if($(this).attr("checked")){
-			$(this).parent().remove();
+			$(this).parent().parent().remove();
 		}
 	});
 };

@@ -23,7 +23,7 @@
    </div>
     <div class="form-group" >
       <label for="ConfirmPassword"  class="col-sm-2 control-label">Confirm Password</label>
-      <div class="col-sm-10"><input type="password" class="form-control" id="Password" placeholder="Enter the Password" style="width:150px;"></div>
+      <div class="col-sm-10"><input type="password" class="form-control" id="ConfirmPassword" placeholder="Enter the Password" style="width:150px;"></div>
    </div>
    <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
@@ -40,7 +40,7 @@
 </body>
 <script>
 var SignUpFunc = function(){
-	if($("#Password").val()!=$("#ConfirmPassword").val() )
+	if(parseInt($("#Password").val())!=parseInt( $("#ConfirmPassword").val()) )
 	{
 		alert("It is different between two password inputs!");
 		return ;
@@ -50,7 +50,7 @@ var SignUpFunc = function(){
         "Password":$("#Password").val()
         };
 
-	$.post("SignUp",{data:"UserSignUp"},function(result){
+	$.post("SignUp",{data:JSON.stringify(UserSignUp)},function(result){
 				console.log(result);
 				if(result=="Success")
                 {
