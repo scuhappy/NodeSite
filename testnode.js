@@ -5,21 +5,23 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
-var urlencodeParser = bodyParser.urlencoded({extended: false});
+var urlencodeParser = bodyParser.urlencoded({extended: true});
 
+
+app.use(cookieParser());
+app.use(express.static(__dirname + '/'));
+app.use(bodyParser.urlencoded({extended:false}));
 
 var vote;
 var flag =0;
-var VoteTime=0;
 
 var UserList = {
     'Users':[
-    {'UserName':'ychen','Password':'12345'},
-    {'UserName':'yfu','Password':'12345'},
-    {'UserName':'edai','Password':'12345'},
+    {'UserName':'ychen','Password':'12345','hasVoted':0},
+    {'UserName':'yfu','Password':'12345','hasVoted':0},
+    {'UserName':'edai','Password':'12345','hasVoted':0},
     ]
 }
-
 function getClientIp(req) {
     return req.headers['x-forwarded-for'] ||
             req.connection.remoteAddress ||
@@ -38,44 +40,88 @@ var CheckUser =function(name,password){
     }
     return 0;
 }
-var UserInfo={"UserName":"","Password":""};
-
-app.use(cookieParser());
-app.use(express.static(__dirname + '/'));
+function CheckVoted(UserName){
+	for(var i=0;i<UserList.Users.length;i++)
+	{
+		console.log("***************"+ UserList.Users[i].UserName);
+		if( UserList.Users[i].UserName == UserName)
+		{
+			console.log("************"+ UserList.Users[i].hasVoted);
+			return  UserList.Users[i].hasVoted;
+		}
+		
+	}
+}
 
 
 app.get('/',function(request,response){
-
+	
 });
 app.get('/GetVoteContent',function(request,response){
-    console.log("***********Write vote content");
+    console.log("***********Write vote content"+JSON.stringify(vote));
     response.write(JSON.stringify(vote));
     response.end();
 })
+app.get('/GetVoteStatus',function(request,response){
+	if(parseInt(CheckVoted( request.cookies.UserName))==1)//voted
+	{
+		response.write("Voted");
+	}
+	else{
+		response.write("nVoted");
+	}
+	response.end();
+});
 app.get('/GetUserInfo',function(request,response){
+	var UserInfo={"UserName":"","Role":""};
     console.log("clinet ip : "+getClientIp(request));
     console.log("Cookies : ",request.cookies);
-
-    console.log("*******Write user info"+UserInfo.UserName);
-    response.write(UserInfo.UserName);
+	if(request.cookies.UserName !="")
+	{
+		UserInfo.UserName = request.cookies.UserName;
+		if(UserInfo.UserName == "edai")
+		{
+			UserInfo.Role ="admin";
+		}else{
+			UserInfo.Role="guest";
+		}
+	}
+    response.write(JSON.stringify(UserInfo));
+	console.log(JSON.stringify(UserInfo));
     response.end();
 });
+app.get('/LogOut',function(request,response){
+	console.log("Log Out");
+	response.cookie("UserName","");
+	response.end();
+})
 
-
-app.post('/PostVote',function(request,response){
-    var obj = JSON.parse(request.body);
-    vote = obj;
-    console.log(vote.VotePersonNumber);
+app.post('/PostVote',urlencodeParser,function(request,response){
+	console.log("*******Post vote   "+JSON.stringify(request.body));
+    vote = JSON.parse(request.body.data);
     response.end();
 })
-app.post('/SendScore',function(request,response){
-    var obj = JSON.parse(request.body);
+app.post('/SendScore',urlencodeParser,function(request,response){
+	for(var i=0;i< UserList.Users.length;i++)
+	{
+		if(UserList.Users[i].UserName == request.cookies.UserName)
+		{
+			if(UserList.Users[i].hasVoted==0)
+			{
+				UserList.Users[i].hasVoted =1;
+			}
+			else {
+				response.end('Error');//HasVoted
+				return;
+			}
+		}
+	}
+    var obj = JSON.parse(request.body.data);	
     for(var i=0;i<vote.Person.length;i++)
     {
         vote.Person[i].PersonScore = parseInt(vote.Person[i].PersonScore) + parseInt(obj.Person[i].PersonScore);
         console.log(vote.Person[i].PersonScore);
     }
-    VoteTime++;
     response.end();
 })
 app.post('/Login',urlencodeParser,function(request,response){
@@ -85,7 +131,6 @@ app.post('/Login',urlencodeParser,function(request,response){
     if(CheckUser(obj.UserName,obj.Password)>0)
     {
         console.log("*******User name "+obj.UserName);
-        UserInfo = obj;
         // Set a cookie to client
         response.cookie('UserName',obj.UserName);
         response.end("Success");
@@ -94,7 +139,7 @@ app.post('/Login',urlencodeParser,function(request,response){
         response.end("Error");
     }
 })
-var server = app.listen(8080,"127.0.0.1", function () {
+var server = app.listen(80,"127.0.0.1", function () {
 
     var host = server.address().address;
     var port = server.address().port;

@@ -1,6 +1,6 @@
 <html>
 <head>
-<link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+	<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body style="background:#7ED87C;">
 
@@ -86,7 +86,7 @@
    </div>
 </p>
 </body>
-<script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+<script src="node_modules/jquery/dist/jquery.min.js"></script>
 <script>
 var addInput = "<p class='Person'><input type='checkbox' class='check'> <Label>Name:</Label> <input  class ='PersonName' style='width:100px;'/> <Label>Content:  </Label> <input type='text' class='PersonContent' style='width:300px;' placeholder='Please input Content'/></p>"
 var AddPerson = function(){
@@ -112,7 +112,7 @@ var RefreshListen=function(){
 };
 RefreshListen();
 function GetJsonData(){
-	var Json={'MessageType':'CreateVoteMSG','Person':[],'VotePersonNumber':parseInt($("#PersonNumberInput").val())}
+	var Json={'MessageType':'CreateVoteMSG','Person':[]}
 	$(".Person").each(function(){
 		var Person={"PersonName":"","PersonContent":"","PersonScore":""};
 		Person.PersonName = $(this).children("input.PersonName").first().val();
@@ -127,7 +127,7 @@ function GetJsonData(){
 };
 var SubmitVoteContent = function(){
 	console.log("Ajax submit!");
-	$.post("PostVote",GetJsonData(),function(result){
+	$.post("PostVote",{data:GetJsonData()},function(result){
 	window.location.href ="/";
 	});
 };
