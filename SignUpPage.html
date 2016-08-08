@@ -1,0 +1,66 @@
+<head>
+ <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	 <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+	<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<body style="background:#7ED87C;" >
+<form role="form"  class="form-horizontal">
+	<div class="form-group">
+		<label  class="col-sm-2 control-label"><h3>Sign up</h3></label>
+	</div>
+   <div class="form-group" >
+      <label for="name"  class="col-sm-2 control-label">User Name</label>
+      <div class="col-sm-10"><input type="text" class="form-control" id="name" placeholder="Enter the Name" style="width:150px;"></div>
+   </div>
+   <div class="form-group" >
+      <label for="Password"  class="col-sm-2 control-label">Password</label>
+      <div class="col-sm-10"><input type="password" class="form-control" id="Password" placeholder="Enter the Password" style="width:150px;"></div>
+   </div>
+    <div class="form-group" >
+      <label for="ConfirmPassword"  class="col-sm-2 control-label">Confirm Password</label>
+      <div class="col-sm-10"><input type="password" class="form-control" id="Password" placeholder="Enter the Password" style="width:150px;"></div>
+   </div>
+   <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+         <button type="submit" class="btn btn-default" onclick="SignUpFunc()">Sign up</button>
+      </div>
+   </div>
+</form>
+ <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+     <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+</body>
+<script>
+var SignUpFunc = function(){
+	if($("#Password").val()!=$("#ConfirmPassword").val() )
+	{
+		alert("It is different between two password inputs!");
+		return ;
+	}
+        var UserSignUp={
+        "UserName":$("#name").val(),
+        "Password":$("#Password").val()
+        };
+
+	$.post("SignUp",{data:"UserSignUp"},function(result){
+				console.log(result);
+				if(result=="Success")
+                {
+                    window.location.href ="/index.html";
+                }
+                else if (result == "Error")
+                {
+                    alert("User Name Occupied!");
+                }
+	});
+};
+</script>
+</html>

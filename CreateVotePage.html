@@ -20,53 +20,55 @@
 	</tr>
 </thread>
 <tbody id="FormContent">
+<!--
 <tr class="Person">
 			<td><input type="checkbox" class="check" > </td>
-			<td><input  class ="PersonName" style="width:100px;" value="CJ"/></td>
+			<td><label  class ="PersonName" style="width:100px;" value="CJ"/></td>
 			<td><input type="text" class="PersonContent" style="width:300px;" placeholder="Please input Content" value=""/></td>
 </tr>
 <tr class="Person">
 			<td><input type="checkbox" class="check" ></td>
-			<td><input  class ="PersonName" style="width:100px;"  value="DY"/></td>
+			<td><label  class ="PersonName" style="width:100px;"  value="DY"/></td>
 			<td><input type="text"  class="PersonContent"  style="width:300px;"placeholder="Please input Content" value=""/></td>
 </tr>
 <tr class="Person">
 			<td><input type="checkbox" class="check" > </td>
-			<td><input  class ="PersonName" style="width:100px;"  value="JGao"/></td>
+			<td><label  class ="PersonName" style="width:100px;"  value="JGao"/></td>
 			<td><input type="text" class="PersonContent" style="width:300px;" placeholder="Please input Content" value=""/></td>
 </tr>
 <tr class="Person">
 			<td><input type="checkbox" class="check" > </td>
-			<td><input  class ="PersonName" style="width:100px;" value="WY"/></td>
+			<td><label  class ="PersonName" style="width:100px;" value="WY"/></td>
 			<td><input type="text" class="PersonContent" style="width:300px;" placeholder="Please input Content" value=""/></td>
 </tr>
 	   
 <tr class="Person">
 			<td><input type="checkbox" class="check" > </td>
-			<td><input  class ="PersonName" style="width:100px;"  value="WZH"/></td>
+			<td><label  class ="PersonName" style="width:100px;"  value="WZH"/></td>
 			<td><input type="text"  class="PersonContent"  style="width:300px;"placeholder="Please input Content" value=""/></td>
 </tr>
 <tr class="Person">
 			<td><input type="checkbox" class="check" > </td>
-			<td><input  class ="PersonName" style="width:100px;"  value="WWG"/></td>
+			<td><label  class ="PersonName" style="width:100px;"  value="WWG"/></td>
 			<td><input type="text" class="PersonContent" style="width:300px;" placeholder="Please input Content" value=""/></td>
 </tr>
 <tr class="Person">
 			<td><input type="checkbox" class="check" > </td>
-			<td><input  class ="PersonName" style="width:100px;" value="YFU"/></td>
+			<td><label  class ="PersonName" style="width:100px;" value="YFU"/></td>
 			<td><input type="text" class="PersonContent" style="width:300px;" placeholder="Please input Content" value=""/></td>
 </tr>
 	   
 <tr class="Person">
 			<td><input type="checkbox" class="check" > </td>
-			<td><input  class ="PersonName" style="width:100px;"  value="YORK"/></td>
+			<td><label  class ="PersonName" style="width:100px;"  value="YORK"/></td>
 			<td><input type="text"  class="PersonContent"  style="width:300px;"placeholder="Please input Content" value=""/></td>
 </tr>
 <tr class="Person">
 			<td><input type="checkbox" class="check" > </td>
-			<td><input  class ="PersonName" style="width:100px;"  value="ZChen"/></td>
+			<td><label  class ="PersonName" style="width:100px;"  value="ZChen"/></td>
 			<td><input type="text" class="PersonContent" style="width:300px;" placeholder="Please input Content" value=""/></td>
 </tr>
+-->
 </tbody>
 </table>
    <div >
@@ -105,10 +107,10 @@ RefreshListen();
 function GetJsonData(){
 	var Json={'VoteNumber':'','Person':[]}
 	$(".Person").each(function(){
-		var Person={"PersonName":"","PersonContent":"","PersonScore":""};
+		var Person={"PersonName":"","PersonContent":"","PersonScore":0,"HasVoted":0};
 		Person.PersonName = $(this).children("td").eq(1).children("input.PersonName").first().val();
 		Person.PersonContent = $(this).children("td").eq(2).children("input.PersonContent").first().val();
-		Person.PersonScore = 0;
+		
 		console.log(Person);
 		Json.Person[Json.Person.length]=Person;
 	});

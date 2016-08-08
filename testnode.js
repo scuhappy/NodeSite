@@ -12,15 +12,16 @@ app.use(cookieParser());
 app.use(express.static(__dirname + '/'));
 app.use(bodyParser.urlencoded({extended:false}));
 
-var vote={"VoteNumber":"","Person":[],"VoteCreateDate":""};
+
+var CurrentVote={"VoteNumber":"","Person":[],"VoteCreateDate":""};
 var Votes={"Votes":[],"VotesNumber":"0"};
 var flag =0;
 
 var UserList = {
     'Users':[
-    {'UserName':'ychen','Password':'12345','hasVoted':0},
-    {'UserName':'yfu','Password':'12345','hasVoted':0},
-    {'UserName':'edai','Password':'12345','hasVoted':0},
+    {'UserName':'ychen','Password':'12345'},
+    {'UserName':'yfu','Password':'12345'},
+    {'UserName':'edai','Password':'12345'},
     ]
 }
 function getClientIp(req) {
@@ -42,13 +43,13 @@ var CheckUser =function(name,password){
     return 0;
 }
 function CheckVoted(UserName){
-	for(var i=0;i<UserList.Users.length;i++)
+	for(var i=0;i<CurrentVote.Person.length;i++)
 	{
-		console.log("***************"+ UserList.Users[i].UserName);
-		if( UserList.Users[i].UserName == UserName)
+		console.log("***************"+ CurrentVote.Person[i].PersonName);
+		if( CurrentVote.Person[i].PersonName == UserName)
 		{
-			console.log("************"+ UserList.Users[i].hasVoted);
-			return  UserList.Users[i].hasVoted;
+			console.log("************"+ CurrentVote.Person[i].HasVoted);
+			return   CurrentVote.Person[i].HasVoted;
 		}
 		
 	}
@@ -59,7 +60,9 @@ app.get('/',function(request,response){
 	
 });
 app.get('/GetVoteContent',function(request,response){
-	var _vote = Votes.Votes[Votes.Votes.length-1];//get the latest vote;
+	//get the latest vote;
+	var _vote = Votes.Votes[Votes.Votes.length-1];
+	
 	console.log(JSON.stringify(_vote));
     response.write(JSON.stringify(_vote));
     response.end();
@@ -100,37 +103,31 @@ app.get('/LogOut',function(request,response){
 
 app.post('/PostVote',urlencodeParser,function(request,response){
 	console.log("*******Post vote   "+JSON.stringify(request.body));
-    vote = JSON.parse(request.body.data);
-	vote.VoteNumber = Votes.Votes.length;
+    CurrentVote = JSON.parse(request.body.data);
+	CurrentVote.VoteNumber = Votes.Votes.length;
 	var date = new Date();
 	console.log("Current time "+date);
-	vote.VoteCreateDate = date;
-	Votes.Votes[Votes.Votes.length]=vote;
+	CurrentVote.VoteCreateDate = date;
+	
+	//Add current vote to votes
+	Votes.Votes[Votes.Votes.length]=CurrentVote;
+	
 	Votes.VotesNumber = Votes.Votes.length;
 	console.log("********"+ Votes.Votes[0].VoteNumber);
     response.end();
 })
 app.post('/SendScore',urlencodeParser,function(request,response){
-	for(var i=0;i< UserList.Users.length;i++)
-	{
-		if(UserList.Users[i].UserName == request.cookies.UserName)
-		{
-			if(UserList.Users[i].hasVoted==0)
-			{
-				UserList.Users[i].hasVoted =1;
-			}
-			else {
-				response.end('Error');//HasVoted
-				return;
-			}
-		}
-	}
     var obj = JSON.parse(request.body.data);	
-    for(var i=0;i<vote.Person.length;i++)
+    for(var i=0;i<CurrentVote.Person.length;i++)
     {
-        vote.Person[i].PersonScore = parseInt(vote.Person[i].PersonScore) + parseInt(obj.Person[i].PersonScore);
-        console.log(vote.Person[i].PersonScore);
+        CurrentVote.Person[i].PersonScore = parseInt(CurrentVote.Person[i].PersonScore) + parseInt(obj.Person[i].PersonScore);
+        if(CurrentVote.Person[i].PersonName == request.cookies.UserName)
+		{
+			CurrentVote.Person[i].HasVoted = 1;
+		}
     }
+	//Copy the currentvote to votes. Use reference will be better.
+	Votes.Votes[Votes.Votes.length-1]=CurrentVote;
     response.end();
 })
 app.post('/Login',urlencodeParser,function(request,response){
@@ -148,6 +145,19 @@ app.post('/Login',urlencodeParser,function(request,response){
         response.end("Error");
     }
 })
+app.post('/SignUp',urlencodeParser,function(request,response){
+	console.log("Sign Up Received!");
+	var obj = JSON.parse(request.data);
+	for(var i=0;i<UserList.Users.length;i++)
+	{
+		if(obj.UserName == UserList.Users[i].UserName)
+		{
+			response.end("Error");
+		}
+	}
+	UserList.Users[UserList.Users.length]= obj;
+	response.end("Success");
+});
 var server = app.listen(80,"127.0.0.1", function () {
 
     var host = server.address().address;
