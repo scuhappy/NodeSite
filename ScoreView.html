@@ -4,6 +4,72 @@
 	<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body  style="background:#7ED87C;">
+<h1><a href="index.html">Main Page</a></h1>
+<h3>View Score Page</h3>
+<div>
+<label>Vote Number Select :</label>
+<select class='combobox form-control' name='inline' id="VoteNumberCombo" style="width:80" onchange="RefreshTable()">
+</select>
+</div>
 
+<table class="table" >
+<thread>
+<tr id="TableHeader">
+<th>Name</th>
+<th>Sum Score</th>
+</tr>
+</thread>
+<tbody id = "TableBody">
+
+</tbody>
+</table>
 </body>
+<script src="node_modules/jquery/dist/jquery.min.js"></script>
+<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script>
+var Votes;
+$.get("GetAllVoteContent",function(result){
+    console.log(result);
+    Votes = JSON.parse(result);
+    for(var i = 0;i<Votes.Votes.length;i++)
+    {
+        var option=$("<option ></option>").text(Votes.Votes[i].VoteNumber);
+        $("#VoteNumberCombo").append(option);
+/*
+        //Add table header
+        for(var j = 0;i<Votes.Votes[i].VoteStatus.length;j++)
+        {
+            if(parseInt(Votes.Votes[i].VoteStatus[j].HasVoted)==1)//Get the voted person
+            {
+                 var head=$("<th ></th>").text(Votes.Votes[i].VoteStatus[j].PersonName);
+                 $("#TableHeader").append(head);
+            }
+        }
+    */
+    }
+    RefreshTable();
+});
+var RefreshTable=function(){
+    console.log("refresh table!!!");
+
+    //Clear the table
+    $("#TableBody").empty();
+
+
+    var index = $("#VoteNumberCombo").find("option:selected").text();
+    //Add table body
+    for(var p=0;p<Votes.Votes[parseInt(index)].Person.length;p++)
+    {
+        var row = $("<tr class= 'name'></tr>");
+        var col1 = $("<td></td>");
+        var col1content = $("<label></label>").text(Votes.Votes[parseInt(index)].Person[p].PersonName);
+        var col2 =     $("<td></td>");
+        var col2content = $("<label></label>").text(Votes.Votes[parseInt(index)].Person[p].PersonScore);
+        col1.append(col1content);
+        col2.append(col2content);
+        row.append(col1,col2);
+        $("#TableBody").append(row);
+    }
+};
+</script>
 </html>

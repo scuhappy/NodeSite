@@ -80,14 +80,31 @@
 <script src="node_modules/jquery/dist/jquery.min.js"></script>
 <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 <script>
-var addInput = "<tr class='Person'><td><input type='checkbox' class='check'></td><td><div class='dropdown'><button type='button' class='btn dropdown-toggle' id='dropdownMenu1' data-toggle='dropdown'>PersonName<span class='caret'></span></button><ul class='dropdown-menu' role='menu' aria-labelledby='dropdownMenu1'><li role='presentation'> <a role='menuitem' tabindex='-1' href='#'>ychen</a></li></ul></div></td><td><input type='text' class='PersonContent' style='width:300px;' placeholder='Please input Content'/></td></tr>"
+var addInput = "<tr class='Person'>\
+<td><input type='checkbox' class='check'></td>\
+<td>\
+        <select class='combobox form-control' name='inline'>\
+        </select>\
+  </div>\
+</td>\
+<td><input type='text' class='PersonContent' style='width:300px;' placeholder='Please input Content'/></td>\
+</tr>"
 var initContent =function(){
 	
 };
+var UserList;
+$.get("GetUserList",function(result){
+    console.log(result);
+    UserList = result.split(" ");
+});
 var AddPerson = function(){
 	console.log("add person");
-	$("#FormContent").append(addInput);
-	$(".DragMenu")
+        $("#FormContent").append(addInput);
+        for(var i =0;i<UserList.length;i++)
+        {
+            var option=$("<option ></option>").text(UserList[i]);
+            $(".combobox").last().append(option);
+        }
 	RefreshListen();
 };
 var RemovePerson = function(){
@@ -108,15 +125,20 @@ var RefreshListen=function(){
 };
 RefreshListen();
 function GetJsonData(){
-	var Json={'VoteNumber':'','Person':[]}
+        var Json={'VoteNumber':'','Person':[],'VoteStatus':[]}
 	$(".Person").each(function(){
-		var Person={"PersonName":"","PersonContent":"","PersonScore":0,"HasVoted":0};
-		Person.PersonName = $(this).children("td").eq(1).children("input.PersonName").first().val();
+                var Person={"PersonName":"","PersonContent":"","PersonScore":0};
+                Person.PersonName = $(this).children("td").eq(1).children(".combobox").first().find("option:selected").text();
+                console.log("Person name: "+Person.PersonName );
 		Person.PersonContent = $(this).children("td").eq(2).children("input.PersonContent").first().val();
-		
 		console.log(Person);
 		Json.Person[Json.Person.length]=Person;
 	});
+        for(var j= 0;j<UserList.length;j++)
+        {
+            var VoteStatus={'PersonName':UserList[j],'HasVoted':'NVoted'};
+            Json.VoteStatus[Json.VoteStatus.length] = VoteStatus;
+        }
 	console.log(Json);
 	return JSON.stringify(Json);
 
@@ -124,7 +146,7 @@ function GetJsonData(){
 var SubmitVoteContent = function(){
 	console.log("Ajax submit!");
 	$.post("PostVote",{data:GetJsonData()},function(result){
-	window.location.href ="/";
+        window.location.href ="/";
 	});
 };
 </script>

@@ -13,16 +13,16 @@
     <title>Thorlabs Software Team</title>
 
     <!-- Bootstrap core CSS -->
-	<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
   </head>
 
   <body style="background:#7ED87C;">
   <nav class="navbar navbar-default" role="navigation">
-	 <div class="navbar-header" id="LoginBtn">
+         <div class="navbar-header" id="LoginBtn">
       <a class="navbar-brand" href="LoginPage.html" >Sign in</a>
    </div>
    <div class="navbar-header" id="UserName" hidden="hidden">
-		<label class="navbar-brand"  id="UserNameLabel">ggg</label>
+                <label class="navbar-brand"  id="UserNameLabel">ggg</label>
    </div>
       <div class="navbar-header" id="LogOutBtn">
       <label class="navbar-brand" onclick="LogOut()">Sign out</label>
@@ -32,63 +32,63 @@
       <a class="navbar-brand" href="SignUpPage.html">Sign up</a>
    </div>
   </nav>
-	<div class="container theme-showcase" role="main">
-		<div class="page-header">
-			<h1>Options</h1>
-		</div>
-		<div>
-			<p id="CreateVoteBtn" >
-				<button type="button" class="btn btn-lg btn-default" onclick="window.location.href='CreateVotePage.html'">Create Vote</button>
-			</p>
-			<p id="ViewScoreBtn">
-				<button type="button" class="btn btn-lg btn-default" onclick="window.location.href='ScoreView.html'">ViewScore</button>
-			</p>
-			<p id="JoinVoteBtn">
-				<button type="button" class="btn btn-lg btn-default" onclick="window.location.href='JoinVotePage.html'">Join a Vote</button>
-			</p>
-		</div>
-	</div>
+        <div class="container theme-showcase" role="main">
+                <div class="page-header">
+                        <h1>Options</h1>
+                </div>
+                <div>
+                        <p id="CreateVoteBtn" >
+                                <button type="button" class="btn btn-lg btn-default" onclick="window.location.href='CreateVotePage.html'">Create Vote</button>
+                        </p>
+                        <p id="ViewScoreBtn">
+                                <button type="button" class="btn btn-lg btn-default" onclick="window.location.href='ScoreView.html'">ViewScore</button>
+                        </p>
+                        <p id="JoinVoteBtn">
+                                <button type="button" class="btn btn-lg btn-default" onclick="window.location.href='JoinVotePage.html'">Join a Vote</button>
+                        </p>
+                </div>
+        </div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
      <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-	
+
 	<script>
-	$.get("GetUserInfo",function(result){
-		var obj = JSON.parse(result);
-		console.log(obj);
-		if(obj.UserName!="")//logind before
-		{
-			$("#UserNameLabel")[0].innerHTML=obj.UserName ;
-			$("#UserName").removeAttr("hidden");
-			$("#LoginBtn").attr("hidden","hidden");
-			$("#LogOutBtn").removeAttr("hidden");
-			$("#SignUpBtn").attr("hidden","hidden");
-			if(obj.Role=="admin")
-			{
-				$("#CreateVoteBtn").removeAttr("hidden");
-				$("#ViewScoreBtn").removeAttr("hidden");
-				$("#JoinVoteBtn").attr("hidden","hidden");
-			}else{
-				$("#CreateVoteBtn").attr("hidden","hidden");
-				$("#ViewScoreBtn").attr("hidden","hidden");
-				$("#JoinVoteBtn").removeAttr("hidden");
-			}
-			
+        $.get("GetUserInfo",function(result){
+                var obj = JSON.parse(result);
+                console.log(obj);
+                if(obj.UserName!="")//logind before
+                {
+                        $("#UserNameLabel")[0].innerHTML=obj.UserName ;
+                        $("#UserName").removeAttr("hidden");
+                        $("#LoginBtn").attr("hidden","hidden");
+                        $("#LogOutBtn").removeAttr("hidden");
+                        $("#SignUpBtn").attr("hidden","hidden");
+                        if(obj.Role=="admin")
+                        {
+                                $("#CreateVoteBtn").removeAttr("hidden");
+                                $("#ViewScoreBtn").removeAttr("hidden");
+                                $("#JoinVoteBtn").attr("hidden","hidden");
+                        }else{
+                                $("#CreateVoteBtn").attr("hidden","hidden");
+                                $("#ViewScoreBtn").attr("hidden","hidden");
+                                $("#JoinVoteBtn").removeAttr("hidden");
+                        }
+
 		}else{
-			$("#CreateVoteBtn").attr("hidden","hidden");
-			$("#UserName").attr("hidden","hidden");
-			$("#LoginBtn").removeAttr("hidden");
-			$("#LogOutBtn").attr("hidden","hidden");
-			$("#SignUpBtn").removeAttr("hidden");
-		}
-	});
-	var LogOut=function(){
-		$.get("LogOut",function(result){
-			window.location.href="/";
-		});
-	}
-	</script>
+                        $("#CreateVoteBtn").attr("hidden","hidden");
+                        $("#UserName").attr("hidden","hidden");
+                        $("#LoginBtn").removeAttr("hidden");
+                        $("#LogOutBtn").attr("hidden","hidden");
+                        $("#SignUpBtn").removeAttr("hidden");
+                }
+        });
+        var LogOut=function(){
+                $.get("LogOut",function(result){
+                        window.location.href="/";
+                });
+        }
+        </script>
   </body>
 </html>

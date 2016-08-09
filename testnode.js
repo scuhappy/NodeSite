@@ -24,6 +24,7 @@ var UserList = {
     {'UserName':'edai','Password':'12345'},
     ]
 }
+var UserNames = [];
 function getClientIp(req) {
     return req.headers['x-forwarded-for'] ||
             req.connection.remoteAddress ||
@@ -43,13 +44,13 @@ var CheckUser =function(name,password){
     return 0;
 }
 function CheckVoted(UserName){
-	for(var i=0;i<CurrentVote.Person.length;i++)
+    for(var i=0;i<CurrentVote.VoteStatus.length;i++)
 	{
-		console.log("***************"+ CurrentVote.Person[i].PersonName);
-		if( CurrentVote.Person[i].PersonName == UserName)
+        console.log("***************"+ CurrentVote.VoteStatus[i].PersonName);
+        if( CurrentVote.VoteStatus[i].PersonName == UserName)
 		{
-			console.log("************"+ CurrentVote.Person[i].HasVoted);
-			return   CurrentVote.Person[i].HasVoted;
+            console.log("************"+ CurrentVote.VoteStatus[i].HasVoted);
+            return   CurrentVote.VoteStatus[i].HasVoted;
 		}
 		
 	}
@@ -59,6 +60,20 @@ function CheckVoted(UserName){
 app.get('/',function(request,response){
 	
 });
+app.get('/GetUserList',function(resquest,response){
+    for(var i=0;i<UserList.Users.length;i++)
+    {
+        UserNames[i]=UserList.Users[i].UserName;
+    }
+    console.log(UserNames);
+    response.write(UserNames.join(" "));
+    response.end();
+})
+app.get('/GetAllVoteContent',function(request,response){
+    console.log("Get all vote received!");
+    response.write(JSON.stringify(Votes));
+    response.end();
+})
 app.get('/GetVoteContent',function(request,response){
 	//get the latest vote;
 	var _vote = Votes.Votes[Votes.Votes.length-1];
@@ -80,8 +95,8 @@ app.get('/GetVoteStatus',function(request,response){
 app.get('/GetUserInfo',function(request,response){
 	var UserInfo={"UserName":"","Role":""};
     console.log("clinet ip : "+getClientIp(request));
-    console.log("Cookies : ",request.cookies);
-	if(request.cookies.UserName !="")
+    console.log("Cookies : ",request.cookies.UserName);
+    if(request.cookies.UserName !="" && request.cookies.UserName!= undefined)
 	{
 		UserInfo.UserName = request.cookies.UserName;
 		if(UserInfo.UserName == "edai")
@@ -121,10 +136,13 @@ app.post('/SendScore',urlencodeParser,function(request,response){
     for(var i=0;i<CurrentVote.Person.length;i++)
     {
         CurrentVote.Person[i].PersonScore = parseInt(CurrentVote.Person[i].PersonScore) + parseInt(obj.Person[i].PersonScore);
-        if(CurrentVote.Person[i].PersonName == request.cookies.UserName)
-		{
-			CurrentVote.Person[i].HasVoted = 1;
-		}
+    }
+    for(var j = 0;j<CurrentVote.VoteStatus.length;j++)
+    {
+        if(CurrentVote.VoteStatus[j].PersonName == request.cookies.UserName)
+        {
+            CurrentVote.VoteStatus[j].HasVoted = 1;
+        }
     }
 	//Copy the currentvote to votes. Use reference will be better.
 	Votes.Votes[Votes.Votes.length-1]=CurrentVote;
@@ -156,6 +174,8 @@ app.post('/SignUp',urlencodeParser,function(request,response){
 		}
 	}
 	UserList.Users[UserList.Users.length]= obj;
+    var VoteStatus={'PersonName':obj.UserName,'HasVoted':'NVoted','VoteScore':0};
+    CurrentVote.VoteStatus[CurrentVote.VoteStatus.length]=VoteStatus;
 	response.end("Success");
 });
 var server = app.listen(80,"127.0.0.1", function () {
