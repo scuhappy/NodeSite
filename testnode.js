@@ -7,6 +7,20 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var urlencodeParser = bodyParser.urlencoded({extended: true});
 
+var mongoose = require('mongoose');
+var DBTesturl = 'mongodb://localhost:27017/Test';
+var dbTest = mongoose.createConnection(DBTesturl);
+
+dbTest.on('error',console.error.bind(console,'connect error: '));
+dbTest.once('open',function(){
+    console.log("open success!");
+});
+var PersonSchema = new mongoose.Schema({name:String,
+                                       password:String});
+var PersonModel = dbTest.model('User',PersonSchema);
+PersonModel.find({'name':'ychen'},function(err,docs){
+        console.log(docs);
+})
 
 app.use(cookieParser());
 app.use(express.static(__dirname + '/'));
@@ -32,17 +46,10 @@ function getClientIp(req) {
             req.connection.socket.remoteAddress;
 };
 var CheckUser =function(name,password){
-    for(var i=0;i<UserList.Users.length;i++)
-    {
-        console.log(name + " "+password);
-        console.log(UserList.Users[i].UserName +" "+ UserList.Users[i].Password );
-        if(UserList.Users[i].UserName == name && UserList.Users[i].Password == password)
-        {
-            return 1;
-        }
-    }
-    return 0;
-}
+    var _res=1;
+    console.log("res = "+res);
+    return res;
+};
 function CheckVoted(UserName){
     for(var i=0;i<CurrentVote.VoteStatus.length;i++)
 	{
@@ -52,7 +59,6 @@ function CheckVoted(UserName){
             console.log("************"+ CurrentVote.VoteStatus[i].HasVoted);
             return   CurrentVote.VoteStatus[i].HasVoted;
 		}
-		
 	}
 }
 
@@ -151,8 +157,7 @@ app.post('/SendScore',urlencodeParser,function(request,response){
 app.post('/Login',urlencodeParser,function(request,response){
     console.log(JSON.stringify(request.body));
     var obj = request.body;
-    console.log(obj.Password);
-    if(CheckUser(obj.UserName,obj.Password)>0)
+    if(CheckUser(obj.UserName,obj.Password))
     {
         console.log("*******User name "+obj.UserName);
         // Set a cookie to client
