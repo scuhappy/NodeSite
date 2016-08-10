@@ -33,7 +33,7 @@ $.get("GetAllVoteContent",function(result){
     Votes = JSON.parse(result);
     for(var i = 0;i<Votes.Votes.length;i++)
     {
-        var option=$("<option ></option>").text(Votes.Votes[i].VoteNumber);
+        var option=$("<option ></option>").text(Votes.Votes[i].Date);
         $("#VoteNumberCombo").append(option);
 /*
         //Add table header

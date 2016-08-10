@@ -22,8 +22,23 @@ var userScheMa = new Schema({
     name: String,
     password: String
 });
+var VotesScheMa = new Schema({
+                                 Date:String,
+                                 Persons:[{
+                                         PersonName:String,
+                                         PersonContent:String,
+                                         PersonScore:String
+                                     }],
+                                 VoteStatus:[{
+                                         PersonName:String,
+                                         HasVoted:String,
+                                         Scores:[{
+                                                 PersonName:String,
+                                                 Score:String}]
+                                     }]
+                             });
 var DBUser = dbTest.model('User',userScheMa,'User');
-
+var DBVotes = dbTest.model('Vote',VotesScheMa,'Votes');
 
 app.use(cookieParser());
 app.use(express.static(__dirname + '/'));
@@ -92,8 +107,14 @@ app.get('/GetUserList',function(resquest,response){
 })
 app.get('/GetAllVoteContent',function(request,response){
     console.log("Get all vote received!");
-    response.write(JSON.stringify(Votes));
-    response.end();
+    DBVotes.find({},function(err,docs){
+        var _Votes = {'Votes':docs};
+        console.log("DB data : "+docs);
+        console.log("All the Votes form DB "+JSON.stringify(_Votes));
+        response.write(JSON.stringify(_Votes));
+        response.end();
+    });
+
 })
 app.get('/GetVoteContent',function(request,response){
 	//get the latest vote;
@@ -141,17 +162,16 @@ app.get('/LogOut',function(request,response){
 app.post('/PostVote',urlencodeParser,function(request,response){
 	console.log("*******Post vote   "+JSON.stringify(request.body));
     CurrentVote = JSON.parse(request.body.data);
-	CurrentVote.VoteNumber = Votes.Votes.length;
-	var date = new Date();
-	console.log("Current time "+date);
-	CurrentVote.VoteCreateDate = date;
-	
-	//Add current vote to votes
-	Votes.Votes[Votes.Votes.length]=CurrentVote;
-	
-	Votes.VotesNumber = Votes.Votes.length;
-	console.log("********"+ Votes.Votes[0].VoteNumber);
-    response.end();
+    console.log(CurrentVote.Date);
+
+    DBVotes.create(CurrentVote,function(err,small){
+        if(!err)
+        {
+            console.log("Saved!");
+        }
+        response.end();
+    });
+
 })
 app.post('/SendScore',urlencodeParser,function(request,response){
     var obj = JSON.parse(request.body.data);	

@@ -125,20 +125,21 @@ var RefreshListen=function(){
 };
 RefreshListen();
 function GetJsonData(){
-        var Json={'VoteNumber':'','Person':[],'VoteStatus':[]}
+        var Json={'Date':'','Persons':[],'VoteStatus':[]}
 	$(".Person").each(function(){
                 var Person={"PersonName":"","PersonContent":"","PersonScore":0};
                 Person.PersonName = $(this).children("td").eq(1).children(".combobox").first().find("option:selected").text();
                 console.log("Person name: "+Person.PersonName );
 		Person.PersonContent = $(this).children("td").eq(2).children("input.PersonContent").first().val();
 		console.log(Person);
-		Json.Person[Json.Person.length]=Person;
+                Json.Persons[Json.Persons.length]=Person;
 	});
         for(var j= 0;j<UserList.length;j++)
         {
-            var VoteStatus={'PersonName':UserList[j],'HasVoted':'NVoted'};
+            var VoteStatus={'PersonName':UserList[j],'HasVoted':'NVoted','Scores':[]};
             Json.VoteStatus[Json.VoteStatus.length] = VoteStatus;
         }
+        Json.Date=new Date();
 	console.log(Json);
 	return JSON.stringify(Json);
 

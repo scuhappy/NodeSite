@@ -12,9 +12,12 @@
 <li class="text-danger">2, You should input one and only one 9 score,one or more than one 0 score. And other score .</li>
 </em></b></P>
 
-<p >
-<label id ="VoteTimeLabel">Vote date:</label>
-</p>
+<div>
+<label>Vote Select :</label>
+<select class='combobox form-control' name='inline' id="VoteNumberCombo" style="width:80" onchange="RefreshTable()">
+</select>
+</div>
+
 <table class="table" action="SubmitVote" >
 <thread>
 <tr>
@@ -23,7 +26,7 @@
 <th>Score</th>
 </tr>
 </thread>
-<tbody id = "FormScore">
+<tbody id = "TableBody">
 
 </tbody>
 </table>
@@ -34,36 +37,59 @@
 </body>
  <script src="node_modules/jquery/dist/jquery.min.js"></script>
 <script>
-var addInput = "<tr><td><label for='firstname' class='PersonNameLabel'>Person Name</label></td><td><label for='firstname' class='PersonContentLabel'>Person Content</label></td><td><input class='PersonScoreInput' type='text' style='width:50px;' /></td></tr>";
+var addInput = "<tr>\
+<td>\
+<label for='firstname' class='PersonNameLabel'>Person Name</label>\
+</td>\
+<td>\
+<label for='firstname' class='PersonContentLabel'>Person Content</label>\
+</td>\
+<td>\
+<input class='PersonScoreInput' type='text' style='width:50px;' />\
+</td>\
+</tr>";
 var VoteContent;
 
 var AddPerson = function(){
 	console.log("add person");
-	$("#FormScore").append(addInput);
+        $("#TableBody").append(addInput);
 };
 var GetData = function(){
-	$.get("GetVoteContent",function(result){
+        $.get("GetAllVoteContent",function(result){
 		console.log(JSON.parse(result));
-		VoteContent = JSON.parse(result);
-		console.log(VoteContent.VoteCreateDate);
-		$("#VoteTimeLabel").text("Vote Create Date: "+VoteContent.VoteCreateDate);
-		for(var i=0;i<VoteContent.Person.length;i++)
-		{
-			AddPerson();
-		}
-		for(var i=0;i<VoteContent.Person.length;i++)
-		{
-			$(".PersonNameLabel")[i].innerHTML =VoteContent.Person[i].PersonName;
-			$(".PersonContentLabel")[i].innerHTML =VoteContent.Person[i].PersonContent;
-			//$(".PersonScoreLabel")[i].innerHTML= VoteContent.Person[i].PersonScore;
-		}
+                VoteContent = JSON.parse(result);//all the votes
+                console.log(VoteContent);
+                for(var m=0;m<VoteContent.Votes.length;m++)
+                {
+                    var option=$("<option ></option>").text(VoteContent.Votes[m].Date);
+                    $("#VoteNumberCombo").append(option);
+
+                }
+                for(var n=0;n<VoteContent.Votes[0].Persons.length;n++)
+                {
+                    var row = $("<tr class="VoteRow"></tr>");
+                    var col1 = $("<td></td>");
+                    var col1content = $("<label></label>").text(VoteContent.Votes[0].Persons[n].PersonName);
+                    var col2 =     $("<td></td>");
+                    var col2content = $("<label></label>").text(VoteContent.Votes[0].Persons[n].PersonContent);
+                    var col3 = $("<td></td>");
+                    var col3content = $("<input class='PersonScoreInput' type='text' style='width:50px;' />");
+                    col1.append(col1content);
+                    col2.append(col2content);
+                    col3.append(col3content);
+                    row.append(col1,col2,col3);
+                    $("#TableBody").append(row);
+                }
 	});
 };
 var SendScore = function(){
-		VoteContent.MessageType ="SendScore";
 		var flag9=0;
 		var flag0 = 0;
-		for(var i=0;i<VoteContent.Person.length;i++)
+                var _Scores = {'Scores':[]};
+                $(".VoteRow").each(function(){
+                        $(this).children("")
+                })
+                for(var i=0;i<$(".PersonScoreInput").length;i++)
 		{
 			if($(".PersonScoreInput").eq(i).val()=="")
 			{
@@ -91,8 +117,8 @@ var SendScore = function(){
 			{
 				flag0=1;
 			}
-			
-			VoteContent.Person[i].PersonScore= parseInt($(".PersonScoreInput").eq(i).val());
+                        var _Score= {"PersonName":,"Score":$(".PersonScoreInput").eq(i).val()}
+                        VoteContent.Person[i].PersonScore= parseInt);
 			console.log(VoteContent.Person[i].PersonScore);
 		}
 		if(flag9==0)//Do not have one 9
@@ -119,6 +145,37 @@ var GetVotedStatus=function(){
 			$('#SubmitBtn').removeAttr('disabled');
 		}
 	});
+};
+var RefreshTable=function(){
+    console.log("refresh table!!!");
+    //Clear the table
+    $("#TableBody").empty();
+
+    var _date = $("#VoteNumberCombo").find("option:selected").text();
+    //Add table body
+    for(var m=0;m<VoteContent.Votes.length;m++)
+    {
+        if(VoteContent.Votes[m].Date == _date)
+        {
+            for(var p=0;p<VoteContent.Votes[m].Persons.length;p++)
+            {
+                var row = $("<tr ></tr>");
+                var col1 = $("<td></td>");
+                var col1content = $("<label></label>").text(VoteContent.Votes[m].Persons[p].PersonName);
+                var col2 =     $("<td></td>");
+                var col2content = $("<label></label>").text(VoteContent.Votes[m].Persons[p].PersonContent);
+                var col3 = $("<td></td>");
+                var col3content = $("<input class='PersonScoreInput' type='text' style='width:50px;' />");
+                col1.append(col1content);
+                col2.append(col2content);
+                col3.append(col3content);
+                row.append(col1,col2,col3);
+                $("#TableBody").append(row);
+            }
+            break;
+        }
+    }
+
 };
 GetVotedStatus();
 GetData();
