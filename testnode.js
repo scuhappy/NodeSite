@@ -9,18 +9,21 @@ var urlencodeParser = bodyParser.urlencoded({extended: true});
 
 var mongoose = require('mongoose');
 var DBTesturl = 'mongodb://localhost:27017/Test';
-var dbTest = mongoose.createConnection(DBTesturl);
-
-dbTest.on('error',console.error.bind(console,'connect error: '));
-dbTest.once('open',function(){
-    console.log("open success!");
+var dbTest = mongoose.connect(DBTesturl,function(err){
+    if(!err)
+    {
+        console.log("Connect to DB Successfully!");
+    }else{
+        console.log("Error to connect to DB");
+    }
 });
-var PersonSchema = new mongoose.Schema({name:String,
-                                       password:String});
-var PersonModel = dbTest.model('User',PersonSchema);
-PersonModel.find({'name':'ychen'},function(err,docs){
-        console.log(docs);
-})
+var Schema = mongoose.Schema;
+var userScheMa = new Schema({
+    name: String,
+    password: String
+});
+var DBUser = dbTest.model('User',userScheMa,'User');
+
 
 app.use(cookieParser());
 app.use(express.static(__dirname + '/'));
@@ -45,23 +48,35 @@ function getClientIp(req) {
             req.socket.remoteAddress ||
             req.connection.socket.remoteAddress;
 };
-var CheckUser =function(name,password){
-    var _res=1;
-    console.log("res = "+res);
-    return res;
+var CheckUser =function(name,password,callback){
+    var res;
+    var query = {name:name,password:password};
+    DBUser.find(query,function(err,docs){
+        console.log(docs);
+        console.log(docs.length);
+        if(docs.length==1)
+        {
+           callback(1);
+        }else{
+            callback(0);
+        }
+    });
 };
-function CheckVoted(UserName){
+
+function CheckVoted(UserName,callback){
     for(var i=0;i<CurrentVote.VoteStatus.length;i++)
 	{
-        console.log("***************"+ CurrentVote.VoteStatus[i].PersonName);
         if( CurrentVote.VoteStatus[i].PersonName == UserName)
 		{
-            console.log("************"+ CurrentVote.VoteStatus[i].HasVoted);
-            return   CurrentVote.VoteStatus[i].HasVoted;
+            callback(CurrentVote.VoteStatus[i].HasVoted);
 		}
 	}
-}
-
+};
+function AddUser(UserName,password,callback){
+    DBUser.create({name:UserName,password:password},function(){
+     callback();
+    });
+};
 
 app.get('/',function(request,response){
 	
@@ -89,14 +104,15 @@ app.get('/GetVoteContent',function(request,response){
     response.end();
 })
 app.get('/GetVoteStatus',function(request,response){
-	if(parseInt(CheckVoted( request.cookies.UserName))==1)//voted
-	{
-		response.write("Voted");
-	}
-	else{
-		response.write("nVoted");
-	}
-	response.end();
+    CheckVoted( request.cookies.UserName,function(result){
+        if(parseInt(result)==1)
+        {
+            response.write("Voted");
+        }else{
+            response.write("nVoted");
+        }
+        response.end();
+    });
 });
 app.get('/GetUserInfo',function(request,response){
 	var UserInfo={"UserName":"","Role":""};
@@ -157,16 +173,18 @@ app.post('/SendScore',urlencodeParser,function(request,response){
 app.post('/Login',urlencodeParser,function(request,response){
     console.log(JSON.stringify(request.body));
     var obj = request.body;
-    if(CheckUser(obj.UserName,obj.Password))
-    {
-        console.log("*******User name "+obj.UserName);
-        // Set a cookie to client
-        response.cookie('UserName',obj.UserName);
-        response.end("Success");
-    }
-    else{
-        response.end("Error");
-    }
+    CheckUser(obj.UserName,obj.Password,function(result){
+        if(result==1)
+        {
+            console.log("*******User name "+obj.UserName);
+            // Set a cookie to client
+            response.cookie('UserName',obj.UserName);
+            response.end("Success");
+        }else
+        {
+                   response.end("Error");
+        }
+       });
 })
 app.post('/SignUp',urlencodeParser,function(request,response){
 	console.log("*************Sign Up Received! " +  request.body.data);
@@ -178,10 +196,13 @@ app.post('/SignUp',urlencodeParser,function(request,response){
 			response.end("Error");
 		}
 	}
-	UserList.Users[UserList.Users.length]= obj;
-    var VoteStatus={'PersonName':obj.UserName,'HasVoted':'NVoted','VoteScore':0};
-    CurrentVote.VoteStatus[CurrentVote.VoteStatus.length]=VoteStatus;
-	response.end("Success");
+
+    AddUser(obj.UserName,obj.Password,function(){
+//        var VoteStatus={'PersonName':obj.UserName,'HasVoted':'NVoted','VoteScore':0};
+//        CurrentVote.VoteStatus[CurrentVote.VoteStatus.length]=VoteStatus;
+        response.end("Success");
+    });
+
 });
 var server = app.listen(80,"127.0.0.1", function () {
 
