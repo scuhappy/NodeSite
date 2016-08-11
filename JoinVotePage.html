@@ -11,7 +11,6 @@
 <li class="text-danger">1, All the input number should between 0~9</li>
 <li class="text-danger">2, You should input one and only one 9 score,one or more than one 0 score. And other score .</li>
 </em></b></P>
-
 <div>
 <label>Vote Select :</label>
 <select class='combobox form-control' name='inline' id="VoteNumberCombo" style="width:80" onchange="RefreshTable()">
@@ -49,7 +48,6 @@ var addInput = "<tr>\
 </td>\
 </tr>";
 var VoteContent;
-
 var AddPerson = function(){
 	console.log("add person");
         $("#TableBody").append(addInput);
@@ -58,7 +56,6 @@ var GetData = function(){
         $.get("GetAllVoteContent",function(result){
 		console.log(JSON.parse(result));
                 VoteContent = JSON.parse(result);//all the votes
-                console.log(VoteContent);
                 for(var m=0;m<VoteContent.Votes.length;m++)
                 {
                     var option=$("<option ></option>").text(VoteContent.Votes[m].Date);
@@ -67,12 +64,12 @@ var GetData = function(){
                 }
                 for(var n=0;n<VoteContent.Votes[0].Persons.length;n++)
                 {
-                    var row = $("<tr class="VoteRow"></tr>");
-                    var col1 = $("<td></td>");
+                    var row = $("<tr class='VoteRow'></tr>");
+                    var col1 = $("<td class='PersonNameCol'></td>");
                     var col1content = $("<label></label>").text(VoteContent.Votes[0].Persons[n].PersonName);
                     var col2 =     $("<td></td>");
                     var col2content = $("<label></label>").text(VoteContent.Votes[0].Persons[n].PersonContent);
-                    var col3 = $("<td></td>");
+                    var col3 = $("<tdn class='ScoreCol'></td>");
                     var col3content = $("<input class='PersonScoreInput' type='text' style='width:50px;' />");
                     col1.append(col1content);
                     col2.append(col2content);
@@ -80,15 +77,75 @@ var GetData = function(){
                     row.append(col1,col2,col3);
                     $("#TableBody").append(row);
                 }
-	});
+                GetVotedStatus();
+        });
+};
+var GetVotedStatus=function(){
+        $.get("GetVoteStatus",function(result){
+                console.log(result);//User Name
+                 var _date = $("#VoteNumberCombo").find("option:selected").text();
+                 console.log("date ="+_date);
+                for(var i =0;i<VoteContent.Votes.length;i++)
+                {
+                    if(VoteContent.Votes[i].Date==_date)
+                    {
+                        for(var j=0;j<VoteContent.Votes[i].VoteStatus.length;j++)
+                        {
+                            if(VoteContent.Votes[i].VoteStatus[j].PersonName ==result )
+                            {
+                                if(VoteContent.Votes[i].VoteStatus[j].HasVoted=="Voted")
+                                {
+                                     $('#SubmitBtn').attr('disabled','true');
+                                }else{
+                                      $('#SubmitBtn').removeAttr('disabled');
+                                }
+
+                            }
+                        }
+                    }
+                }
+        });
 };
 var SendScore = function(){
 		var flag9=0;
 		var flag0 = 0;
-                var _Scores = {'Scores':[]};
+                var _date = $("#VoteNumberCombo").find("option:selected").text();
+                var _Scores = {'Scores':[],'Date':_date};
+                console.log("SendScore!");
                 $(".VoteRow").each(function(){
-                        $(this).children("")
-                })
+                   var Input = $(this).children(".ScoreCol").eq(0).children(".PersonScoreInput").eq(0);
+                   if(Input.val()=="")
+                   {
+                           alert("Please input score for all the people!");
+                           return;
+                   }
+                   else if(parseInt(Input.val())>9 || parseInt(Input.val())<0)
+                   {
+                           alert("Score should be between 0~9!");
+                           return;
+                   }
+                   else if(parseInt(Input.val())==9)
+                   {
+                           if(flag9==0)
+                           {
+                                   flag9=1;
+                           }
+                           else
+                           {
+                                   alert("Just allow one '9' in scores!");
+                                   return ;
+                           }
+                   }
+                   else if(parseInt(Input.val())==0)
+                   {
+                           flag0=1;
+                   }
+                   var _Score= {"PersonName":$(this).children(".PersonNameCol").eq(0).children(".PersonNameLabel").eq(0).val(),"Score":Input.val()};
+                    console.log ("Every Person : "+_Score.PersonName);
+                   _Scores.Scores[_Scores.Scores.length]=_Score;
+                   console.log("Scores ==  "+_Scores);
+                });
+                /*
                 for(var i=0;i<$(".PersonScoreInput").length;i++)
 		{
 			if($(".PersonScoreInput").eq(i).val()=="")
@@ -117,10 +174,13 @@ var SendScore = function(){
 			{
 				flag0=1;
 			}
-                        var _Score= {"PersonName":,"Score":$(".PersonScoreInput").eq(i).val()}
-                        VoteContent.Person[i].PersonScore= parseInt);
-			console.log(VoteContent.Person[i].PersonScore);
+                        var _Score= {"PersonName":$(".PersonScoreInput").eq(i).parent().parent().children("td.PersonNameCol").eq(0).children(".PersonNameLabel").eq(0).val(),"Score":$(".PersonScoreInput").eq(i).val()};
+                         console.log ("Every Person : "+_Score.PersonName);
+                        _Scores.Scores[_Scores.Scores.length]=_Score;
+                        console.log("Scores ==  "+_Scores);
 		}
+                */
+
 		if(flag9==0)//Do not have one 9
 		{
 			alert("You should input at least one 9 score!");
@@ -131,27 +191,19 @@ var SendScore = function(){
 			alert("You should input at least one 0 score!");
 			return;
 		}
-		$.post("SendScore",{data:JSON.stringify(VoteContent)},function(result){
-			window.location.href ="JoinVotePage.html";
-		});
+              //  $.post("SendScore",{data:JSON.stringify(_Scores)},function(result){
+             //           console.log("Post score success!");
+                        //window.location.href ="JoinVotePage.html";
+        //	});
 }
-var GetVotedStatus=function(){
-	$.get("GetVoteStatus",function(result){
-		console.log(result);
-		if(result== "Voted")
-		{
-			$('#SubmitBtn').attr('disabled','true');
-		}else{
-			$('#SubmitBtn').removeAttr('disabled');
-		}
-	});
-};
+
 var RefreshTable=function(){
     console.log("refresh table!!!");
     //Clear the table
     $("#TableBody").empty();
 
     var _date = $("#VoteNumberCombo").find("option:selected").text();
+    console.log(_date);
     //Add table body
     for(var m=0;m<VoteContent.Votes.length;m++)
     {
@@ -177,7 +229,6 @@ var RefreshTable=function(){
     }
 
 };
-GetVotedStatus();
 GetData();
 </script>
 </html>

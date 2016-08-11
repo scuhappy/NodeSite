@@ -78,7 +78,7 @@ var CheckUser =function(name,password,callback){
     });
 };
 
-function CheckVoted(UserName,callback){
+function CheckVoted(Date,UserName,callback){
     for(var i=0;i<CurrentVote.VoteStatus.length;i++)
 	{
         if( CurrentVote.VoteStatus[i].PersonName == UserName)
@@ -125,15 +125,7 @@ app.get('/GetVoteContent',function(request,response){
     response.end();
 })
 app.get('/GetVoteStatus',function(request,response){
-    CheckVoted( request.cookies.UserName,function(result){
-        if(parseInt(result)==1)
-        {
-            response.write("Voted");
-        }else{
-            response.write("nVoted");
-        }
-        response.end();
-    });
+    response.end(request.cookies.UserName);//Send back the user name
 });
 app.get('/GetUserInfo',function(request,response){
 	var UserInfo={"UserName":"","Role":""};
@@ -175,19 +167,48 @@ app.post('/PostVote',urlencodeParser,function(request,response){
 })
 app.post('/SendScore',urlencodeParser,function(request,response){
     var obj = JSON.parse(request.body.data);	
-    for(var i=0;i<CurrentVote.Person.length;i++)
-    {
-        CurrentVote.Person[i].PersonScore = parseInt(CurrentVote.Person[i].PersonScore) + parseInt(obj.Person[i].PersonScore);
-    }
-    for(var j = 0;j<CurrentVote.VoteStatus.length;j++)
-    {
-        if(CurrentVote.VoteStatus[j].PersonName == request.cookies.UserName)
-        {
-            CurrentVote.VoteStatus[j].HasVoted = 1;
-        }
-    }
-	//Copy the currentvote to votes. Use reference will be better.
-	Votes.Votes[Votes.Votes.length-1]=CurrentVote;
+    console.log(JSON.stringify(obj));
+    DBVotes.find({'Date':obj.Date},function(err,docs){
+        console.log("*********Docs : "+docs);
+       console.log(docs[0].Date);
+       for(var i = 0;i<docs[0].VoteStatus.length;i++)
+       {
+           if(request.cookies.UserName == docs[0].VoteStatus[i].PersonName)
+           {
+                docs[0].VoteStatus[i].HasVoted = "Voted";
+                docs[0].VoteStatus[i].Scores = obj.Scores;
+           }
+       }
+       for(var j =0;j<docs[0].Persons.length;j++)
+       {
+           for(var p=0;p<obj.Scores.length;p++)
+           {
+                 if(docs[0].Persons[j].PersonName == obj.Scores[p].PersonName)
+                 {
+                     docs[0].Persons[j].PersonScore = parseInt(docs[0].Persons[j].PersonScore)+ parseInt(obj.Scores[p].PersonScore);
+                 }
+           }
+
+       }
+
+       console.log(docs[0]);
+       DBVotes.update({'Date':obj.Date},{$set:{'VoteStatus':docs[0].VoteStatus,'Persons': docs[0].Persons}} , function(err){
+            console.log(err);
+       });
+    });
+//    for(var i=0;i<CurrentVote.Person.length;i++)
+//    {
+//        CurrentVote.Person[i].PersonScore = parseInt(CurrentVote.Person[i].PersonScore) + parseInt(obj.Person[i].PersonScore);
+//    }
+//    for(var j = 0;j<CurrentVote.VoteStatus.length;j++)
+//    {
+//        if(CurrentVote.VoteStatus[j].PersonName == request.cookies.UserName)
+//        {
+//            CurrentVote.VoteStatus[j].HasVoted = 1;
+//        }
+//    }
+//	//Copy the currentvote to votes. Use reference will be better.
+//	Votes.Votes[Votes.Votes.length-1]=CurrentVote;
     response.end();
 })
 app.post('/Login',urlencodeParser,function(request,response){
