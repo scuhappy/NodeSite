@@ -56,7 +56,6 @@ var UserList = {
     {'UserName':'edai','Password':'12345'},
     ]
 }
-var UserNames = [];
 function getClientIp(req) {
     return req.headers['x-forwarded-for'] ||
             req.connection.remoteAddress ||
@@ -97,13 +96,18 @@ app.get('/',function(request,response){
 	
 });
 app.get('/GetUserList',function(resquest,response){
-    for(var i=0;i<UserList.Users.length;i++)
-    {
-        UserNames[i]=UserList.Users[i].UserName;
-    }
-    console.log(UserNames);
-    response.write(UserNames.join(" "));
-    response.end();
+    var  UserNames=[];
+    DBUser.find({},function(err,docs){
+        console.log(docs);
+           for(var i =0;i<docs.length;i++)
+           {
+               UserNames[i] = docs[i].name;
+           }
+           console.log(UserNames);
+           response.write(UserNames.join(" "));
+           response.end();
+    });
+
 })
 app.get('/GetAllVoteContent',function(request,response){
     console.log("Get all vote received!");
@@ -171,44 +175,41 @@ app.post('/SendScore',urlencodeParser,function(request,response){
     DBVotes.find({'Date':obj.Date},function(err,docs){
         console.log("*********Docs : "+docs);
        console.log(docs[0].Date);
+        var  HasVotePermissionflag = 0;
        for(var i = 0;i<docs[0].VoteStatus.length;i++)
        {
            if(request.cookies.UserName == docs[0].VoteStatus[i].PersonName)
            {
+                HasVotePermissionflag =1;
                 docs[0].VoteStatus[i].HasVoted = "Voted";
                 docs[0].VoteStatus[i].Scores = obj.Scores;
+
            }
        }
+       if(HasVotePermissionflag ==0)//Do not have permission to Vote
+       {
+           response.end("Error");
+           return;
+       }
+
        for(var j =0;j<docs[0].Persons.length;j++)
        {
            for(var p=0;p<obj.Scores.length;p++)
            {
                  if(docs[0].Persons[j].PersonName == obj.Scores[p].PersonName)
                  {
-                     docs[0].Persons[j].PersonScore = parseInt(docs[0].Persons[j].PersonScore)+ parseInt(obj.Scores[p].PersonScore);
+                     docs[0].Persons[j].PersonScore = parseInt(docs[0].Persons[j].PersonScore)+ parseInt(obj.Scores[p].Score);
+                     console.log("Person score == "+docs[0].Persons[j].PersonScore );
+                     break;
                  }
            }
 
        }
-
        console.log(docs[0]);
        DBVotes.update({'Date':obj.Date},{$set:{'VoteStatus':docs[0].VoteStatus,'Persons': docs[0].Persons}} , function(err){
             console.log(err);
        });
     });
-//    for(var i=0;i<CurrentVote.Person.length;i++)
-//    {
-//        CurrentVote.Person[i].PersonScore = parseInt(CurrentVote.Person[i].PersonScore) + parseInt(obj.Person[i].PersonScore);
-//    }
-//    for(var j = 0;j<CurrentVote.VoteStatus.length;j++)
-//    {
-//        if(CurrentVote.VoteStatus[j].PersonName == request.cookies.UserName)
-//        {
-//            CurrentVote.VoteStatus[j].HasVoted = 1;
-//        }
-//    }
-//	//Copy the currentvote to votes. Use reference will be better.
-//	Votes.Votes[Votes.Votes.length-1]=CurrentVote;
     response.end();
 })
 app.post('/Login',urlencodeParser,function(request,response){
@@ -230,19 +231,18 @@ app.post('/Login',urlencodeParser,function(request,response){
 app.post('/SignUp',urlencodeParser,function(request,response){
 	console.log("*************Sign Up Received! " +  request.body.data);
 	var obj = JSON.parse(request.body.data);
-	for(var i=0;i<UserList.Users.length;i++)
-	{
-		if(obj.UserName == UserList.Users[i].UserName)
-		{
-			response.end("Error");
-		}
-	}
-
-    AddUser(obj.UserName,obj.Password,function(){
-//        var VoteStatus={'PersonName':obj.UserName,'HasVoted':'NVoted','VoteScore':0};
-//        CurrentVote.VoteStatus[CurrentVote.VoteStatus.length]=VoteStatus;
-        response.end("Success");
+    DBUser.find({'name':obj.UserName},function(err,docs){
+        if(docs.length>=1)//already have
+        {
+                response.end("Error");
+        }else{
+            AddUser(obj.UserName,obj.Password,function(){
+                response.end("Success");
+            });
+        }
     });
+
+
 
 });
 var server = app.listen(80,"127.0.0.1", function () {

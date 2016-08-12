@@ -15,8 +15,6 @@
 <table class="table" >
 <thread>
 <tr id="TableHeader">
-<th>Name</th>
-<th>Sum Score</th>
 </tr>
 </thread>
 <tbody id = "TableBody">
@@ -29,23 +27,11 @@
 <script>
 var Votes;
 $.get("GetAllVoteContent",function(result){
-    console.log(result);
     Votes = JSON.parse(result);
     for(var i = 0;i<Votes.Votes.length;i++)
     {
         var option=$("<option ></option>").text(Votes.Votes[i].Date);
         $("#VoteNumberCombo").append(option);
-/*
-        //Add table header
-        for(var j = 0;i<Votes.Votes[i].VoteStatus.length;j++)
-        {
-            if(parseInt(Votes.Votes[i].VoteStatus[j].HasVoted)==1)//Get the voted person
-            {
-                 var head=$("<th ></th>").text(Votes.Votes[i].VoteStatus[j].PersonName);
-                 $("#TableHeader").append(head);
-            }
-        }
-    */
     }
     RefreshTable();
 });
@@ -53,23 +39,95 @@ var RefreshTable=function(){
     console.log("refresh table!!!");
 
     //Clear the table
+    $("#TableHeader").empty();
     $("#TableBody").empty();
 
+    var _date = $("#VoteNumberCombo").find("option:selected").text();
 
-    var index = $("#VoteNumberCombo").find("option:selected").text();
-    //Add table body
-    for(var p=0;p<Votes.Votes[parseInt(index)].Person.length;p++)
+    var lockHeader = "<th>Name</th><th>Sum Score</th>";
+    $("#TableHeader").append(lockHeader);
+    for(var i = 0;i<Votes.Votes.length;i++)
     {
-        var row = $("<tr class= 'name'></tr>");
-        var col1 = $("<td></td>");
-        var col1content = $("<label></label>").text(Votes.Votes[parseInt(index)].Person[p].PersonName);
-        var col2 =     $("<td></td>");
-        var col2content = $("<label></label>").text(Votes.Votes[parseInt(index)].Person[p].PersonScore);
-        col1.append(col1content);
-        col2.append(col2content);
-        row.append(col1,col2);
-        $("#TableBody").append(row);
+        if(Votes.Votes[i].Date == _date)
+        {
+            Votei = Votes.Votes[i];
+            //Add header
+            for(var j = 0;j<Votei.VoteStatus.length;j++)
+            {
+                     var _name= Votei.VoteStatus[j].PersonName;
+                     var head=$("<th ></th>").text(_name);
+                     $("#TableHeader").append(head);
+            }
+
+
+            //Add table body
+            //Sort the list by score
+            var _Persons = SortPersons(Votes.Votes[i].Persons);
+            console.log("qweqwwqewqe");
+            for(var p=0;p<_Persons.length;p++)//For every row
+            {
+                var row = $("<tr ></tr>");
+                var col1 = $("<td></td>");
+                var _PersonName = _Persons[p].PersonName;
+                var col1content = $("<label></label>").text(_PersonName);
+                var col2 =     $("<td></td>");
+                var _PPScore = _Persons[p].PersonScore;
+                var col2content = $("<label></label>").text(_PPScore);
+                col1.append(col1content);
+                col2.append(col2content);
+                row.append(col1,col2);
+
+                for(var q = 0;q<Votes.Votes[i].VoteStatus.length;q++)//for every person
+                {
+                    var flag=0;
+                    for(var n = 0;n<Votes.Votes[i].VoteStatus[q].Scores.length;n++)//for each person 's every score
+                    {
+                        if(Votes.Votes[i].VoteStatus[q].Scores[n].PersonName ==_PersonName)//check if the score is for current person
+                        {
+                            flag = 1;
+                            var _PersonScore = Votes.Votes[i].VoteStatus[q].Scores[n].Score;
+                            var col =     $("<td></td>");
+                            var colcontent = $("<label></label>").text(_PersonScore);
+                            col.append(colcontent);
+                            row.append(col);
+                            break;
+                        }
+                    }
+                    if(flag==0)//not scored
+                    {
+                        var col =     $("<td></td>");
+                        var colcontent = $("<label></label>").text("None");
+                        col.append(colcontent);
+                        row.append(col);
+                    }
+                }
+                $("#TableBody").append(row);
+            }
+            break;
+        }
     }
+
+};
+var SortPersons= function(Persons){
+       for(var i = 1;i<Persons.length;i++)
+       {
+            console.log("asdasdasdas : "+Persons.length);
+           for(var j =0;j<i;j++)
+           {
+               if(parseInt(Persons[i].PersonScore)>=parseInt(Persons[j].PersonScore))
+               {
+                    var tmp = Persons[i];
+                    for(var m=i;m>j;m--)
+                    {
+                            Persons[m]=Persons[m-1];
+                    }
+                    Persons[j] = tmp;
+                    console.log("bbbbbbbbbbbbbb");
+                    break;
+               }
+            }
+       }
+       return Persons;
 };
 </script>
 </html>
