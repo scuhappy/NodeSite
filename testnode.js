@@ -183,7 +183,6 @@ app.post('/SendScore',urlencodeParser,function(request,response){
                 HasVotePermissionflag =1;
                 docs[0].VoteStatus[i].HasVoted = "Voted";
                 docs[0].VoteStatus[i].Scores = obj.Scores;
-
            }
        }
        if(HasVotePermissionflag ==0)//Do not have permission to Vote
@@ -196,7 +195,7 @@ app.post('/SendScore',urlencodeParser,function(request,response){
        {
            for(var p=0;p<obj.Scores.length;p++)
            {
-                 if(docs[0].Persons[j].PersonName == obj.Scores[p].PersonName)
+                 if(docs[0].Persons[j].PersonContent == obj.Scores[p].PersonContent)
                  {
                      docs[0].Persons[j].PersonScore = parseInt(docs[0].Persons[j].PersonScore)+ parseInt(obj.Scores[p].Score);
                      console.log("Person score == "+docs[0].Persons[j].PersonScore );

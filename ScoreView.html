@@ -4,11 +4,28 @@
 	<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body  style="background:#7ED87C;">
-<h1><a href="index.html">Main Page</a></h1>
+<nav class="navbar navbar-default" role="navigation">
+<div class="navbar-header" id="HomeBtn">
+  <a class="navbar-brand" href="index.html" >Home</a>
+</div>
+       <div class="navbar-header" id="LoginBtn">
+    <a class="navbar-brand" href="LoginPage.html" >Sign in</a>
+ </div>
+ <div class="navbar-header" id="UserName" hidden="hidden">
+              <label class="navbar-brand"  id="UserNameLabel">ggg</label>
+ </div>
+    <div class="navbar-header" id="LogOutBtn">
+    <label class="navbar-brand" onclick="LogOut()">Sign out</label>
+ </div>
+  </div>
+    <div class="navbar-header" id="SignUpBtn">
+    <a class="navbar-brand" href="SignUpPage.html">Sign up</a>
+ </div>
+</nav>
 <h3>View Score Page</h3>
 <div>
 <label>Vote Number Select :</label>
-<select class='combobox form-control' name='inline' id="VoteNumberCombo" style="width:80" onchange="RefreshTable()">
+<select class='combobox form-control' name='inline' id="VoteNumberCombo" style="width:250" onchange="RefreshTable()">
 </select>
 </div>
 
@@ -44,7 +61,7 @@ var RefreshTable=function(){
 
     var _date = $("#VoteNumberCombo").find("option:selected").text();
 
-    var lockHeader = "<th>Name</th><th>Sum Score</th>";
+    var lockHeader = "<th>Name</th><th>Content</th><th>Sum Score</th>";
     $("#TableHeader").append(lockHeader);
     for(var i = 0;i<Votes.Votes.length;i++)
     {
@@ -70,19 +87,25 @@ var RefreshTable=function(){
                 var col1 = $("<td></td>");
                 var _PersonName = _Persons[p].PersonName;
                 var col1content = $("<label></label>").text(_PersonName);
-                var col2 =     $("<td></td>");
+                var _PPContent =  _Persons[p].PersonContent;
+                var col2 =    $("<td></td>");
+                var col2content = $("<label></label>").text(_PPContent);
+                var col3 =     $("<td></td>");
                 var _PPScore = _Persons[p].PersonScore;
-                var col2content = $("<label></label>").text(_PPScore);
+                var col3content = $("<label></label>").text(_PPScore);
+
                 col1.append(col1content);
                 col2.append(col2content);
-                row.append(col1,col2);
+                col3.append(col3content)
+                row.append(col1,col2,col3);
 
                 for(var q = 0;q<Votes.Votes[i].VoteStatus.length;q++)//for every person
                 {
                     var flag=0;
                     for(var n = 0;n<Votes.Votes[i].VoteStatus[q].Scores.length;n++)//for each person 's every score
                     {
-                        if(Votes.Votes[i].VoteStatus[q].Scores[n].PersonName ==_PersonName)//check if the score is for current person
+                        console.log("content : "+Votes.Votes[i].VoteStatus[q].Scores[n].PersonContent );
+                        if(Votes.Votes[i].VoteStatus[q].Scores[n].PersonContent ==_PPContent)//check if the score is for current content
                         {
                             flag = 1;
                             var _PersonScore = Votes.Votes[i].VoteStatus[q].Scores[n].Score;
@@ -111,7 +134,6 @@ var RefreshTable=function(){
 var SortPersons= function(Persons){
        for(var i = 1;i<Persons.length;i++)
        {
-            console.log("asdasdasdas : "+Persons.length);
            for(var j =0;j<i;j++)
            {
                if(parseInt(Persons[i].PersonScore)>=parseInt(Persons[j].PersonScore))
@@ -122,12 +144,16 @@ var SortPersons= function(Persons){
                             Persons[m]=Persons[m-1];
                     }
                     Persons[j] = tmp;
-                    console.log("bbbbbbbbbbbbbb");
                     break;
                }
             }
        }
        return Persons;
 };
+</script>
+<script src="ReFreshNavBar.js" >
+</script>
+<script>
+Refresh();
 </script>
 </html>
