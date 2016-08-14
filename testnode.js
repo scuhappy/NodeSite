@@ -19,8 +19,8 @@ var dbTest = mongoose.connect(DBTesturl,function(err){
 });
 var Schema = mongoose.Schema;
 var userScheMa = new Schema({
-    name: String,
-    password: String
+    UserName: String,
+    Password: String
 });
 var VotesScheMa = new Schema({
                                  Date:String,
@@ -33,11 +33,11 @@ var VotesScheMa = new Schema({
                                          PersonName:String,
                                          HasVoted:String,
                                          Scores:[{
-                                                 PersonName:String,
+                                                 PersonContent:String,
                                                  Score:String}]
                                      }]
                              });
-var DBUser = dbTest.model('User',userScheMa,'User');
+var DBUser = dbTest.model('User',userScheMa,'Users');
 var DBVotes = dbTest.model('Vote',VotesScheMa,'Votes');
 
 app.use(cookieParser());
@@ -64,7 +64,7 @@ function getClientIp(req) {
 };
 var CheckUser =function(name,password,callback){
     var res;
-    var query = {name:name,password:password};
+    var query = {UserName:name,Password:password};
     DBUser.find(query,function(err,docs){
         console.log(docs);
         console.log(docs.length);
@@ -87,7 +87,7 @@ function CheckVoted(Date,UserName,callback){
 	}
 };
 function AddUser(UserName,password,callback){
-    DBUser.create({name:UserName,password:password},function(){
+    DBUser.create({UserName:UserName,Password:password},function(){
      callback();
     });
 };
@@ -101,7 +101,7 @@ app.get('/GetUserList',function(resquest,response){
         console.log(docs);
            for(var i =0;i<docs.length;i++)
            {
-               UserNames[i] = docs[i].name;
+               UserNames[i] = docs[i].UserName;
            }
            console.log(UserNames);
            response.write(UserNames.join(" "));
@@ -171,7 +171,8 @@ app.post('/PostVote',urlencodeParser,function(request,response){
 })
 app.post('/SendScore',urlencodeParser,function(request,response){
     var obj = JSON.parse(request.body.data);	
-    console.log(JSON.stringify(obj));
+    console.log("Get Scores : "+JSON.stringify(obj));
+
     DBVotes.find({'Date':obj.Date},function(err,docs){
         console.log("*********Docs : "+docs);
        console.log(docs[0].Date);
@@ -230,7 +231,7 @@ app.post('/Login',urlencodeParser,function(request,response){
 app.post('/SignUp',urlencodeParser,function(request,response){
 	console.log("*************Sign Up Received! " +  request.body.data);
 	var obj = JSON.parse(request.body.data);
-    DBUser.find({'name':obj.UserName},function(err,docs){
+    DBUser.find({'UserName':obj.UserName},function(err,docs){
         if(docs.length>=1)//already have
         {
                 response.end("Error");
@@ -244,7 +245,7 @@ app.post('/SignUp',urlencodeParser,function(request,response){
 
 
 });
-var server = app.listen(80,"127.0.0.1", function () {
+var server = app.listen(8080,"127.0.0.1", function () {
 
     var host = server.address().address;
     var port = server.address().port;
