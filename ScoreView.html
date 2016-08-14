@@ -4,23 +4,7 @@
 	<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body  style="background:#7ED87C;">
-<nav class="navbar navbar-default" role="navigation">
-<div class="navbar-header" id="HomeBtn">
-  <a class="navbar-brand" href="index.html" >Home</a>
-</div>
-       <div class="navbar-header" id="LoginBtn">
-    <a class="navbar-brand" href="LoginPage.html" >Sign in</a>
- </div>
- <div class="navbar-header" id="UserName" hidden="hidden">
-              <label class="navbar-brand"  id="UserNameLabel">ggg</label>
- </div>
-    <div class="navbar-header" id="LogOutBtn">
-    <label class="navbar-brand" onclick="LogOut()">Sign out</label>
- </div>
-  </div>
-    <div class="navbar-header" id="SignUpBtn">
-    <a class="navbar-brand" href="SignUpPage.html">Sign up</a>
- </div>
+<nav class="navbar navbar-default" role="navigation" id ="MainNavBar">
 </nav>
 <h3>View Score Page</h3>
 <div>
@@ -41,6 +25,7 @@
 </body>
 <script src="node_modules/jquery/dist/jquery.min.js"></script>
 <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script  src="NavBar.js" ></script>
 <script>
 var Votes;
 $.get("GetAllVoteContent",function(result){
@@ -80,7 +65,6 @@ var RefreshTable=function(){
             //Add table body
             //Sort the list by score
             var _Persons = SortPersons(Votes.Votes[i].Persons);
-            console.log("qweqwwqewqe");
             for(var p=0;p<_Persons.length;p++)//For every row
             {
                 var row = $("<tr ></tr>");
@@ -154,6 +138,7 @@ var SortPersons= function(Persons){
 <script src="ReFreshNavBar.js" >
 </script>
 <script>
+AddNavBar();
 Refresh();
 </script>
 </html>

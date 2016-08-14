@@ -1,27 +1,10 @@
 <html>
-
 <head>
 	<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body style="background:#7ED87C;">
-<nav class="navbar navbar-default" role="navigation">
-<div class="navbar-header" id="HomeBtn">
-  <a class="navbar-brand" href="index.html" >Home</a>
-</div>
-       <div class="navbar-header" id="LoginBtn">
-    <a class="navbar-brand" href="LoginPage.html" >Sign in</a>
- </div>
- <div class="navbar-header" id="UserName" hidden="hidden">
-              <label class="navbar-brand"  id="UserNameLabel">ggg</label>
- </div>
-    <div class="navbar-header" id="LogOutBtn">
-    <label class="navbar-brand" onclick="LogOut()">Sign out</label>
- </div>
-  </div>
-    <div class="navbar-header" id="SignUpBtn">
-    <a class="navbar-brand" href="SignUpPage.html">Sign up</a>
- </div>
+<nav class="navbar navbar-default" role="navigation" id ="MainNavBar">
 </nav>
 <h3  >Join Vote</h3>
 <p class="text-danger"><b><em>Score Rules:
@@ -52,6 +35,7 @@
 
 </body>
  <script src="node_modules/jquery/dist/jquery.min.js"></script>
+     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 <script>
 var addInput = "<tr>\
 <td>\
@@ -197,7 +181,7 @@ var RefreshTable=function(){
             for(var p=0;p<VoteContent.Votes[m].Persons.length;p++)
             {
             var _PersonName = VoteContent.Votes[m].Persons[p].PersonName;
-            console.log("current user  = ",UserName);
+            console.log("current user  = ",_UserName);
             if(_PersonName == _UserName)//if is current user
             {
                 continue;
@@ -224,9 +208,11 @@ var RefreshTable=function(){
 };
 GetData();
 </script>
+ <script  src="NavBar.js" ></script>
 <script src="ReFreshNavBar.js" >
 </script>
 <script>
+AddNavBar();
 Refresh();
 </script>
 </html>

@@ -17,23 +17,7 @@
   </head>
 
   <body style="background:#7ED87C;">
-  <nav class="navbar navbar-default" role="navigation">
-  <div class="navbar-header" id="HomeBtn">
-    <a class="navbar-brand" href="index.html" >Home</a>
-  </div>
-         <div class="navbar-header" id="LoginBtn">
-      <a class="navbar-brand" href="LoginPage.html" >Sign in</a>
-   </div>
-   <div class="navbar-header" id="UserName" hidden="hidden">
-                <label class="navbar-brand"  id="UserNameLabel">ggg</label>
-   </div>
-      <div class="navbar-header" id="LogOutBtn">
-      <label class="navbar-brand" onclick="LogOut()">Sign out</label>
-   </div>
-    </div>
-      <div class="navbar-header" id="SignUpBtn">
-      <a class="navbar-brand" href="SignUpPage.html">Sign up</a>
-   </div>
+  <nav class="navbar navbar-default" role="navigation" id ="MainNavBar">
   </nav>
         <div class="container theme-showcase" role="main">
                 <div class="page-header">
@@ -56,9 +40,11 @@
     <!-- Placed at the end of the document so the pages load faster -->
      <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script  src="NavBar.js" ></script>
      <script src="ReFreshNavBar.js" >
     </script>
     <script>
+    AddNavBar();
     Refresh();
     </script>
   </body>

@@ -21,6 +21,7 @@ $.get("GetUserInfo",function(result){
                 }
 
 }else{
+                console.log("no user login");
                 $("#CreateVoteBtn").attr("hidden","hidden");
                 $("#ViewScoreBtn").attr("hidden","hidden");
                 $("#UserName").attr("hidden","hidden");
