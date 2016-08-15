@@ -48,49 +48,27 @@
      <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
    <script src="node_modules/angular/angular.min.js"></script>
 <script>
-var MainApp=angular.module('myApp', []);
-MainApp.controller('userCtrl',function($scope){
-        $.get("GetVoteStatus",function(result){
-            _UserName =result;
-           var _date = $("#VoteNumberCombo").find("option:selected").text();
-           console.log(_date);
-           //Add table body
-           for(var m=0;m<VoteContent.Votes.length;m++)
-           {
-               if(VoteContent.Votes[m].Date == _date)
-               {
-                  console.log("Persons : "+JSON.stringify(VoteContent.Votes[m].Persons));
-                  $scope.Users  = VoteContent.Votes[m].Persons;
-                   break;
-               }
-           }
-                   GetVotedStatus();
-       });
-})
 var VoteContent;
 var RefreshTable=function(){
     console.log("refresh table!!!");
 
- $.get("GetVoteStatus",function(result){
-     _UserName =result;
-
-    var _date = $("#VoteNumberCombo").find("option:selected").text();
-    console.log(_date);
-
-
-    //Add table body
-    for(var m=0;m<VoteContent.Votes.length;m++)
-    {
-        if(VoteContent.Votes[m].Date == _date)
+     $.get("GetVoteStatus",function(result){
+         _UserName =result;
+        var _date = $("#VoteNumberCombo").find("option:selected").text();
+        console.log(_date);
+        //Add table body
+        for(var m=0;m<VoteContent.Votes.length;m++)
         {
-            break;
+            if(VoteContent.Votes[m].Date == _date)
+            {
+                break;
+            }
+
         }
-
-    }
-
-            GetVotedStatus();
-    });
+           GetVotedStatus();
+        });
 };
+
 var UserName;
 var GetData = function(){
         $.get("GetAllVoteContent",function(result){
@@ -201,7 +179,32 @@ var SendScore = function(){
                        }
                 });
 }
-GetData();
+var GetItems = function(callback){
+    $.get("GetVoteStatus",function(result){
+        _UserName =result;
+       var _date = $("#VoteNumberCombo").find("option:selected").text();
+       console.log(_date);
+       //Add table body
+       for(var m=0;m<VoteContent.Votes.length;m++)
+       {
+           if(VoteContent.Votes[m].Date == _date)
+           {
+               console.log(VoteContent.Votes[m].Persons);
+               callback(VoteContent.Votes[m].Persons);
+           }
+
+       }
+     });
+};
+var MainApp=angular.module('myApp', []);
+MainApp.controller('userCtrl',function($scope){
+        GetData();
+        GetItems(function(result){
+            console.log(result);
+            $scope.Users  = result;
+        });
+
+});
 </script>
  <script  src="NavBar.js" ></script>
 <script src="ReFreshNavBar.js" >
