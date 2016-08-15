@@ -3,7 +3,7 @@
 	<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body style="background:#7ED87C;">
+<body style="background:#7ED87C;" ng-app="myApp" ng-controller="userCtrl" >
 <nav class="navbar navbar-default" role="navigation" id ="MainNavBar">
 </nav>
 <h3  >Join Vote</h3>
@@ -26,7 +26,17 @@
 </tr>
 </thread>
 <tbody id = "TableBody">
-
+<tr  ng-repeat = "User in Users">
+<td class='PersonNameCol'>
+<label class ='PersonNameLabel'>{{User.PersonName}}</label>
+</td>
+<td class ='PersonContentCol'>
+<label class ='PersonContentLabel'>{{User.PersonContent}}</label>
+</td>
+<td class='ScoreCol'>
+<input class='PersonScoreInput' type='text' style='width:50px;' />
+</td>
+</tr>
 </tbody>
 </table>
 <div>
@@ -36,22 +46,50 @@
 </body>
  <script src="node_modules/jquery/dist/jquery.min.js"></script>
      <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+   <script src="node_modules/angular/angular.min.js"></script>
 <script>
-var addInput = "<tr>\
-<td>\
-<label for='firstname' class='PersonNameLabel'>Person Name</label>\
-</td>\
-<td>\
-<label for='firstname' class='PersonContentLabel'>Person Content</label>\
-</td>\
-<td>\
-<input class='PersonScoreInput' type='text' style='width:50px;' />\
-</td>\
-</tr>";
+var MainApp=angular.module('myApp', []);
+MainApp.controller('userCtrl',function($scope){
+        $.get("GetVoteStatus",function(result){
+            _UserName =result;
+           var _date = $("#VoteNumberCombo").find("option:selected").text();
+           console.log(_date);
+           //Add table body
+           for(var m=0;m<VoteContent.Votes.length;m++)
+           {
+               if(VoteContent.Votes[m].Date == _date)
+               {
+                  console.log("Persons : "+JSON.stringify(VoteContent.Votes[m].Persons));
+                  $scope.Users  = VoteContent.Votes[m].Persons;
+                   break;
+               }
+           }
+                   GetVotedStatus();
+       });
+})
 var VoteContent;
-var AddPerson = function(){
-	console.log("add person");
-        $("#TableBody").append(addInput);
+var RefreshTable=function(){
+    console.log("refresh table!!!");
+
+ $.get("GetVoteStatus",function(result){
+     _UserName =result;
+
+    var _date = $("#VoteNumberCombo").find("option:selected").text();
+    console.log(_date);
+
+
+    //Add table body
+    for(var m=0;m<VoteContent.Votes.length;m++)
+    {
+        if(VoteContent.Votes[m].Date == _date)
+        {
+            break;
+        }
+
+    }
+
+            GetVotedStatus();
+    });
 };
 var UserName;
 var GetData = function(){
@@ -163,49 +201,6 @@ var SendScore = function(){
                        }
                 });
 }
-
-var RefreshTable=function(){
-    console.log("refresh table!!!");
-    //Clear the table
-    $("#TableBody").empty();
- $.get("GetVoteStatus",function(result){
-     _UserName =result;
-
-    var _date = $("#VoteNumberCombo").find("option:selected").text();
-    console.log(_date);
-    //Add table body
-    for(var m=0;m<VoteContent.Votes.length;m++)
-    {
-        if(VoteContent.Votes[m].Date == _date)
-        {
-            for(var p=0;p<VoteContent.Votes[m].Persons.length;p++)
-            {
-            var _PersonName = VoteContent.Votes[m].Persons[p].PersonName;
-            console.log("current user  = ",_UserName);
-            if(_PersonName == _UserName)//if is current user
-            {
-                continue;
-            }
-            var row = $("<tr class='VoteRow'></tr>");
-            var col1 = $("<td class='PersonNameCol'></td>");
-            var col1content = $("<label class ='PersonNameLabel'></label>").text(_PersonName);
-            var col2 =     $("<td class ='PersonContentCol'></td>");
-            var col2content = $("<label class ='PersonContentLabel'></label>").text(VoteContent.Votes[m].Persons[p].PersonContent);
-            var col3 = $("<td class='ScoreCol'></td>");
-            var col3content = $("<input class='PersonScoreInput' type='text' style='width:50px;' />");
-            col1.append(col1content);
-            col2.append(col2content);
-            col3.append(col3content);
-            row.append(col1,col2,col3);
-            $("#TableBody").append(row);
-            }
-            break;
-        }
-
-    }
-            GetVotedStatus();
-    });
-};
 GetData();
 </script>
  <script  src="NavBar.js" ></script>
