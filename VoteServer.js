@@ -20,7 +20,8 @@ var dbTest = mongoose.connect(DBTesturl,function(err){
 var Schema = mongoose.Schema;
 var userScheMa = new Schema({
     UserName: String,
-    Password: String
+    Password: String,
+    Role:String
 });
 var VotesScheMa = new Schema({
                                  Date:String,
@@ -49,13 +50,6 @@ var CurrentVote={"VoteNumber":"","Person":[],"VoteCreateDate":""};
 var Votes={"Votes":[],"VotesNumber":"0"};
 var flag =0;
 
-var UserList = {
-    'Users':[
-    {'UserName':'ychen','Password':'12345'},
-    {'UserName':'yfu','Password':'12345'},
-    {'UserName':'edai','Password':'12345'},
-    ]
-}
 function getClientIp(req) {
     return req.headers['x-forwarded-for'] ||
             req.connection.remoteAddress ||
@@ -86,9 +80,10 @@ function CheckVoted(Date,UserName,callback){
 		}
 	}
 };
-function AddUser(UserName,password,callback){
-    DBUser.create({UserName:UserName,Password:password},function(){
-     callback();
+function AddUser(UserName,password,role,callback){
+    DBUser.create({UserName:UserName,Password:password,Role:role},function(err){
+        console.log("err : "+err);
+       callback();
     });
 };
 
@@ -138,16 +133,18 @@ app.get('/GetUserInfo',function(request,response){
     if(request.cookies.UserName !="" && request.cookies.UserName!= undefined)
 	{
 		UserInfo.UserName = request.cookies.UserName;
-		if(UserInfo.UserName == "edai")
-		{
-			UserInfo.Role ="admin";
-		}else{
-			UserInfo.Role="guest";
-		}
-	}
-    response.write(JSON.stringify(UserInfo));
-	console.log(JSON.stringify(UserInfo));
-    response.end();
+        DBUser.find({UserName :UserInfo.UserName },function(err,docs){
+            console.log(docs);
+           UserInfo.Role =  docs[0].Role;
+            response.write(JSON.stringify(UserInfo));
+            console.log(JSON.stringify(UserInfo));
+            response.end();
+        });
+    }else{
+         response.write(JSON.stringify(UserInfo));
+        response.end();
+    }
+
 });
 app.get('/LogOut',function(request,response){
 	console.log("Log Out");
@@ -236,7 +233,13 @@ app.post('/SignUp',urlencodeParser,function(request,response){
         {
                 response.end("Error");
         }else{
-            AddUser(obj.UserName,obj.Password,function(){
+            var _role = "guest";
+            if(obj.UserName == "edai")//Just edai is admin role
+            {
+                _role = "admin";
+            }
+                console.log(obj);
+                AddUser(obj.UserName,obj.Password,_role,function(){
                 response.end("Success");
             });
         }
@@ -245,7 +248,7 @@ app.post('/SignUp',urlencodeParser,function(request,response){
 
 
 });
-var server = app.listen(8080,"127.0.0.1", function () {
+var server = app.listen(80,"127.0.0.1", function () {
 
     var host = server.address().address;
     var port = server.address().port;

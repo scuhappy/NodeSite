@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <title>Thorlabs Software Team</title>
+
+    <!-- Bootstrap core CSS -->
+        <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="node_modules/summernote/dist/summernote.css" rel="stylesheet">
+
+  </head>
+
+  <body style="background:#7ED87C;">
+  <nav class="navbar navbar-default" role="navigation" id ="MainNavBar">
+  </nav>
+  <div id="summernote"><p>Hello World</p></div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+     <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+      <script src="node_modules/summernote/dist/summernote.js"></script>
+
+    <script>
+      $(document).ready(function() {
+          $('#summernote').summernote({
+          height: 300,                 // set editor height
+          minHeight: null,             // set minimum height of editor
+          maxHeight: null,             // set maximum height of editor
+          focus: true                  // set focus to editable area after initializing summernote
+        });
+      });
+    </script>
+    <script  src="NavBar.js" ></script>
+     <script src="ReFreshNavBar.js" >
+    </script>
+    <script>
+    AddNavBar();
+    Refresh();
+    </script>
+  </body>
+</html>
