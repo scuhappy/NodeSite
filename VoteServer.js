@@ -108,12 +108,9 @@ app.get('/GetAllVoteContent',function(request,response){
     console.log("Get all vote received!");
     DBVotes.find({},function(err,docs){
         var _Votes = {'Votes':docs};
-        console.log("DB data : "+docs);
-        console.log("All the Votes form DB "+JSON.stringify(_Votes));
         response.write(JSON.stringify(_Votes));
         response.end();
     });
-
 })
 app.get('/GetVoteContent',function(request,response){
 	//get the latest vote;
@@ -248,7 +245,7 @@ app.post('/SignUp',urlencodeParser,function(request,response){
 
 
 });
-var server = app.listen(8080,"127.0.0.1", function () {
+var server = app.listen(80,"127.0.0.1", function () {
 
     var host = server.address().address;
     var port = server.address().port;

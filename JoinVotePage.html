@@ -13,7 +13,8 @@
 </em></b></P>
 <div>
 <label>Vote Select :</label>
-<select class='combobox form-control' name='inline' id="VoteNumberCombo" style="width:250" onchange="RefreshTable()">
+<select class='combobox form-control' id="VoteNumberCombo" style="width:250" ng-model="SelectedDate" ng-change="">
+<option ng-repeat = " Vote in Votes">{{Vote.Date}}</option>
 </select>
 </div>
 
@@ -49,39 +50,7 @@
    <script src="node_modules/angular/angular.min.js"></script>
 <script>
 var VoteContent;
-var RefreshTable=function(){
-    console.log("refresh table!!!");
-
-     $.get("GetVoteStatus",function(result){
-         _UserName =result;
-        var _date = $("#VoteNumberCombo").find("option:selected").text();
-        console.log(_date);
-        //Add table body
-        for(var m=0;m<VoteContent.Votes.length;m++)
-        {
-            if(VoteContent.Votes[m].Date == _date)
-            {
-                break;
-            }
-
-        }
-           GetVotedStatus();
-        });
-};
-
 var UserName;
-var GetData = function(){
-        $.get("GetAllVoteContent",function(result){
-		console.log(JSON.parse(result));
-                VoteContent = JSON.parse(result);//all the votes
-                for(var m=0;m<VoteContent.Votes.length;m++)
-                {
-                    var option=$("<option ></option>").text(VoteContent.Votes[m].Date);
-                    $("#VoteNumberCombo").append(option);
-                }
-                RefreshTable();
-        });
-};
 var GetVotedStatus=function(){
         $.get("GetVoteStatus",function(result){
                 console.log(result);//User Name
@@ -179,31 +148,26 @@ var SendScore = function(){
                        }
                 });
 }
-var GetItems = function(callback){
-    $.get("GetVoteStatus",function(result){
-        _UserName =result;
-       var _date = $("#VoteNumberCombo").find("option:selected").text();
-       console.log(_date);
-       //Add table body
-       for(var m=0;m<VoteContent.Votes.length;m++)
-       {
-           if(VoteContent.Votes[m].Date == _date)
-           {
-               console.log(VoteContent.Votes[m].Persons);
-               callback(VoteContent.Votes[m].Persons);
-           }
-
-       }
-     });
-};
 var MainApp=angular.module('myApp', []);
-MainApp.controller('userCtrl',function($scope){
-        GetData();
-        GetItems(function(result){
-            console.log(result);
-            $scope.Users  = result;
-        });
+MainApp.controller('userCtrl',function($scope,$http,$filter){
+           $scope.GetData =function(){
+            $http.get("GetAllVoteContent")
+            .success(function(response) {
+                $scope.VoteContent = response;
+                $scope.Votes = response.Votes;
+                console.log("Date = "+$scope.Votes[0].Date);
+                var LatestIndex = $scope.Votes.length-1;
+                $scope.SelectedDate = $scope.Votes[LatestIndex ].Date;
+                console.log("Get all votes "+JSON.stringify(response) );
+                $scope.Users = response.Votes[LatestIndex].Persons;//$filter('{Date: $scope.SelectedDate }')(response.Votes).Persons;
+                console.log("After filter Persons : "+  $scope.Users);
+            });
+            };
+            $scope.GetData();
 
+            $scope.RefreshTable() = function(){
+
+            }
 });
 </script>
  <script  src="NavBar.js" ></script>
