@@ -14,7 +14,7 @@
 <div>
 <label>Vote Select :</label>
 <select class='combobox form-control' id="VoteNumberCombo" style="width:250" ng-model="SelectedDate" ng-change="RefreshTable()">
-<option ng-repeat = " Vote in Votes">{{Vote.Date}}</option>
+<option ng-repeat = " Vote in Votes | orderBy :Vote.Date:true">{{Vote.Date}}</option>
 </select>
 </div>
 

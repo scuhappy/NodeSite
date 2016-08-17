@@ -10,7 +10,7 @@
 <div>
 <label>Vote Number Select :</label>
 <select class='combobox form-control' name='inline' id="VoteNumberCombo" style="width:250" ng-change="RefreshTable()" ng-model = "SelectedDate">
-<option ng-repeat = " Vote in Votes">{{Vote.Date}}</option>
+<option ng-repeat = " Vote in Votes| orderBy :Vote.Date:true ">{{Vote.Date}}</option>
 </select>
 </div>
 
@@ -55,8 +55,8 @@ MainApp.controller('userCtrl',function($scope,$http){
     $http.get("GetAllVoteContent").success(function(result){
        $scope.Votes =result.Votes;
        var LatestIndex = $scope.Votes.length-1;
-       $scope.VoteStatus = $scope.Votes[LatestIndex].VoteStatus;
        $scope.Persons = $scope.Votes[LatestIndex].Persons;
+       $scope.VoteStatus = $scope.Votes[LatestIndex].VoteStatus;
        $scope.SelectedDate = $scope.Votes[LatestIndex].Date;
        $scope. RefreshTable();
     });
@@ -68,31 +68,13 @@ MainApp.controller('userCtrl',function($scope,$http){
     {
         if($scope.Votes[i].Date == $scope.SelectedDate)
         {
-            $scope.VoteStatus = $scope.Votes[i].VoteStatus;
             $scope.Persons = $scope.Votes[i].Persons;
+            $scope.VoteStatus = $scope.Votes[i].VoteStatus;
+            return;
         }
     }
 };
 });
-var SortPersons= function(Persons){
-       for(var i = 1;i<Persons.length;i++)
-       {
-           for(var j =0;j<i;j++)
-           {
-               if(parseInt(Persons[i].PersonScore)>=parseInt(Persons[j].PersonScore))
-               {
-                    var tmp = Persons[i];
-                    for(var m=i;m>j;m--)
-                    {
-                            Persons[m]=Persons[m-1];
-                    }
-                    Persons[j] = tmp;
-                    break;
-               }
-            }
-       }
-       return Persons;
-};
 </script>
 <script src="ReFreshNavBar.js" >
 </script>
