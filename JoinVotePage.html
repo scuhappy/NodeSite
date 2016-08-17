@@ -13,7 +13,7 @@
 </em></b></P>
 <div>
 <label>Vote Select :</label>
-<select class='combobox form-control' id="VoteNumberCombo" style="width:250" ng-model="SelectedDate" ng-change="">
+<select class='combobox form-control' id="VoteNumberCombo" style="width:250" ng-model="SelectedDate" ng-change="RefreshTable()">
 <option ng-repeat = " Vote in Votes">{{Vote.Date}}</option>
 </select>
 </div>
@@ -32,16 +32,16 @@
 <label class ='PersonNameLabel'>{{User.PersonName}}</label>
 </td>
 <td class ='PersonContentCol'>
-<label class ='PersonContentLabel'>{{User.PersonContent}}</label>
+<label class ='PersonContentLabel' >{{User.PersonContent}}</label>
 </td>
 <td class='ScoreCol'>
-<input class='PersonScoreInput' type='text' style='width:50px;' />
+<input class='PersonScoreInput' type='text' style='width:50px;' ng-model = "$parent.Scores[$index]"/>
 </td>
 </tr>
 </tbody>
 </table>
 <div>
-<input type="submit" value="submit score" class="btn btn-lg btn-default" id='SubmitBtn' onclick="SendScore()"/>
+<input type="submit" value="submit score" class="btn btn-lg btn-default" id='SubmitBtn' ng-click="SendScore()"/>
 </div>
 
 </body>
@@ -51,103 +51,6 @@
 <script>
 var VoteContent;
 var UserName;
-var GetVotedStatus=function(){
-        $.get("GetVoteStatus",function(result){
-                console.log(result);//User Name
-                UserName = result;
-                 var _date = $("#VoteNumberCombo").find("option:selected").text();
-                 console.log("date ="+_date);
-                var flag =0;
-                for(var i =0;i<VoteContent.Votes.length;i++)
-                {
-                    if(VoteContent.Votes[i].Date==_date)
-                    {
-                        for(var j=0;j<VoteContent.Votes[i].VoteStatus.length;j++)
-                        {
-                            if(VoteContent.Votes[i].VoteStatus[j].PersonName ==result )
-                            {
-                                flag=1;
-                                if(VoteContent.Votes[i].VoteStatus[j].HasVoted=="Voted")
-                                {
-                                     $('#SubmitBtn').attr('disabled','true');
-                                }else{
-                                      $('#SubmitBtn').removeAttr('disabled');
-                                }
-
-                            }
-                        }
-                        if(flag==0)
-                        {
-                        //do not have this person
-                        console.log("do not have this person");
-                            $('#SubmitBtn').attr('disabled','true');
-                        }
-                        break;
-                    }
-                }
-        });
-};
-var SendScore = function(){
-		var flag9=0;
-		var flag0 = 0;
-                var _date = $("#VoteNumberCombo").find("option:selected").text();
-                var _Scores = {'Scores':[],'Date':_date};
-                console.log("SendScore!");
-                $(".VoteRow").each(function(){
-                   var Input = $(this).children(".ScoreCol").eq(0).children(".PersonScoreInput").eq(0);
-                   var Content = $(this).children(".PersonContentCol").eq(0).children(".PersonContentLabel").eq(0);
-                   console.log("*********Content = "+Content.text());
-                   if(Input.val()=="")
-                   {
-                           alert("Please input score for all the people!");
-                           return;
-                   }
-                   else if(parseInt(Input.val())>9 || parseInt(Input.val())<0)
-                   {
-                           alert("Score should be between 0~9!");
-                           return;
-                   }
-                   else if(parseInt(Input.val())==9)
-                   {
-                           if(flag9==0)
-                           {
-                                   flag9=1;
-                           }
-                           else
-                           {
-                                   alert("Just allow one '9' in scores!");
-                                   return ;
-                           }
-                   }
-                   else if(parseInt(Input.val())==0)
-                   {
-                           flag0=1;
-                   }
-                   var _Score= {"PersonContent":Content.text(),"Score":Input.val()};
-                  _Scores.Scores[_Scores.Scores.length]=_Score;
-                  console.log("PersonContent = "+_Score.PersonContent);
-                });
-		if(flag9==0)//Do not have one 9
-		{
-			alert("You should input at least one 9 score!");
-			return;
-		}
-		else if(flag0==0)
-		{
-			alert("You should input at least one 0 score!");
-			return;
-		}
-                $.post("SendScore",{data:JSON.stringify(_Scores)},function(result){
-                if(result=="Error")//do not have permission to vote
-                {
-                    console.log("vote error");
-                    $('#SubmitBtn').attr('disabled','true');
-                }else{
-                       console.log("Post score success!");
-                       window.location.href ="JoinVotePage.html";
-                       }
-                });
-}
 var MainApp=angular.module('myApp', []);
 MainApp.controller('userCtrl',function($scope,$http,$filter){
            $scope.GetData =function(){
@@ -158,15 +61,109 @@ MainApp.controller('userCtrl',function($scope,$http,$filter){
                 console.log("Date = "+$scope.Votes[0].Date);
                 var LatestIndex = $scope.Votes.length-1;
                 $scope.SelectedDate = $scope.Votes[LatestIndex ].Date;
-                console.log("Get all votes "+JSON.stringify(response) );
-                $scope.Users = response.Votes[LatestIndex].Persons;//$filter('{Date: $scope.SelectedDate }')(response.Votes).Persons;
-                console.log("After filter Persons : "+  $scope.Users);
+                $scope.Users = response.Votes[LatestIndex].Persons;
+                $scope.VoteStatus = response.Votes[LatestIndex].VoteStatus;
+                $scope.GetVoteStatus();
             });
             };
             $scope.GetData();
-
-            $scope.RefreshTable() = function(){
-
+            $scope.GetVoteStatus = function(){
+            $http.get("GetVoteStatus").success(function(result){
+                    console.log(result);//User Name
+                    UserName = result;
+                    var flag =0;
+                    for(var j=0;j<$scope.VoteStatus.length;j++)
+                    {
+                        if($scope.VoteStatus[j].PersonName ==result )
+                    {
+                        flag=1;
+                    if($scope.VoteStatus[j].HasVoted=="Voted")
+                    {
+                        $('#SubmitBtn').attr('disabled','true');
+                    }else{
+                        $('#SubmitBtn').removeAttr('disabled');
+                    }
+                    }
+                    }
+                    if(flag==0)
+                    {
+                    //do not have this person
+                    console.log("do not have this person");
+                    $('#SubmitBtn').attr('disabled','true');
+                    }
+            });
+    };
+            $scope.RefreshTable= function(){
+            console.log("Current Seleted date : "+  $scope.SelectedDate);
+                 for(var i = 0;i<$scope.Votes.length;i++)
+                 {
+                    if( $scope.SelectedDate == $scope.Votes[i].Date)
+                    {
+                        $scope.Users  = $scope.Votes[i].Persons;
+                        $scope.VoteStatus = $scope.Votes[i].VoteStatus;
+                        break;
+                    }
+                 }
+                  $scope.GetVoteStatus();
+            }
+            $scope.SendScore = function(){
+                            var flag9=0;
+                            var flag0 = 0;
+                            var _Scores = {'Scores':[],'Date':$scope.SelectedDate};
+                            console.log("SendScore!");
+                            for(var i=0;i<$scope.Users.length;i++)
+                            {
+                            console.log($scope.Scores[i]);
+                            if($scope.Scores[i]=="")
+                            {
+                                    alert("Please input score for all the people!");
+                                    return;
+                            }
+                            else if(parseInt($scope.Scores[i])>9 || parseInt($scope.Scores[i])<0)
+                            {
+                                    alert("Score should be between 0~9!");
+                                    return;
+                            }
+                            else if(parseInt($scope.Scores[i])==9)
+                            {
+                            console.log("9999999999");
+                                    if(flag9==0)
+                                    {
+                                            flag9=1;
+                                    }
+                                    else
+                                    {
+                                            alert("Just allow one '9' in scores!");
+                                            return ;
+                                    }
+                            }
+                            else if(parseInt($scope.Scores[i])==0)
+                            {
+                                    flag0=1;
+                            }
+                            var _Score= {"PersonContent":$scope.Users[i].PersonContent,"Score":$scope.Scores[i]};
+                           _Scores.Scores[_Scores.Scores.length]=_Score;
+                            }
+                            if(flag9==0)//Do not have one 9
+                            {
+                                    alert("You should input at least one 9 score!");
+                                    return;
+                            }
+                            else if(flag0==0)
+                            {
+                                    alert("You should input at least one 0 score!");
+                                    return;
+                            }
+                            $.post("SendScore",{data:JSON.stringify(_Scores)},function(result){
+                            if(result=="Error")//do not have permission to vote
+                            {
+                                console.log("vote error");
+                                $('#SubmitBtn').attr('disabled','true');
+                            }else{
+                                   console.log("Post score success!");
+                                   window.location.href ="JoinVotePage.html";
+                                   }
+                            });
             }
 });
 </script>
