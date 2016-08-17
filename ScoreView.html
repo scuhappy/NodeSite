@@ -3,118 +3,77 @@
     <!-- Bootstrap core CSS -->
 	<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body  style="background:#7ED87C;">
+<body  style="background:#7ED87C;" ng-app="ScoreViewApp"  ng-controller="userCtrl">
 <nav class="navbar navbar-default" role="navigation" id ="MainNavBar">
 </nav>
 <h3>View Score Page</h3>
 <div>
 <label>Vote Number Select :</label>
-<select class='combobox form-control' name='inline' id="VoteNumberCombo" style="width:250" onchange="RefreshTable()">
+<select class='combobox form-control' name='inline' id="VoteNumberCombo" style="width:250" ng-change="RefreshTable()" ng-model = "SelectedDate">
+<option ng-repeat = " Vote in Votes">{{Vote.Date}}</option>
 </select>
 </div>
 
 <table class="table" >
 <thread>
 <tr id="TableHeader">
+<th>Name</th>
+<th>Content</th>
+<th>Sum Score</th>
+<th ng-repeat = "VoteS in VoteStatus">{{VoteS.PersonName}}</th>
 </tr>
 </thread>
 <tbody id = "TableBody">
-
+<tr  ng-repeat = "Person in Persons| orderBy: Person.PersonScore :true">
+<td >{{Person.PersonName}}</td>
+<td> {{Person.PersonContent}}</td>
+<td>{{Person.PersonScore}}</td>
+<td ng-repeat="VoteS in VoteStatus">{{VoteS.Scores | FilterScore : Person.PersonContent }}</td>
+</tr>
 </tbody>
 </table>
 </body>
 <script src="node_modules/jquery/dist/jquery.min.js"></script>
 <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="node_modules/angular/angular.min.js"></script>
 <script  src="NavBar.js" ></script>
 <script>
-var Votes;
-$.get("GetAllVoteContent",function(result){
-    Votes = JSON.parse(result);
-    for(var i = 0;i<Votes.Votes.length;i++)
+var MainApp=angular.module('ScoreViewApp', []);
+MainApp.filter('FilterScore', function() {
+  return function(Scores,PersonContent) {
+    for(var i = 0;i<Scores.length;i++)
     {
-        var option=$("<option ></option>").text(Votes.Votes[i].Date);
-        $("#VoteNumberCombo").append(option);
-    }
-    RefreshTable();
-});
-var RefreshTable=function(){
-    console.log("refresh table!!!");
-
-    //Clear the table
-    $("#TableHeader").empty();
-    $("#TableBody").empty();
-
-    var _date = $("#VoteNumberCombo").find("option:selected").text();
-
-    var lockHeader = "<th>Name</th><th>Content</th><th>Sum Score</th>";
-    $("#TableHeader").append(lockHeader);
-    for(var i = 0;i<Votes.Votes.length;i++)
-    {
-        if(Votes.Votes[i].Date == _date)
+        if(Scores[i].PersonContent == PersonContent)
         {
-            Votei = Votes.Votes[i];
-            //Add header
-            for(var j = 0;j<Votei.VoteStatus.length;j++)
-            {
-                     var _name= Votei.VoteStatus[j].PersonName;
-                     var head=$("<th ></th>").text(_name);
-                     $("#TableHeader").append(head);
-            }
-
-
-            //Add table body
-            //Sort the list by score
-            var _Persons = SortPersons(Votes.Votes[i].Persons);
-            for(var p=0;p<_Persons.length;p++)//For every row
-            {
-                var row = $("<tr ></tr>");
-                var col1 = $("<td></td>");
-                var _PersonName = _Persons[p].PersonName;
-                var col1content = $("<label></label>").text(_PersonName);
-                var _PPContent =  _Persons[p].PersonContent;
-                var col2 =    $("<td></td>");
-                var col2content = $("<label></label>").text(_PPContent);
-                var col3 =     $("<td></td>");
-                var _PPScore = _Persons[p].PersonScore;
-                var col3content = $("<label></label>").text(_PPScore);
-
-                col1.append(col1content);
-                col2.append(col2content);
-                col3.append(col3content)
-                row.append(col1,col2,col3);
-
-                for(var q = 0;q<Votes.Votes[i].VoteStatus.length;q++)//for every person
-                {
-                    var flag=0;
-                    for(var n = 0;n<Votes.Votes[i].VoteStatus[q].Scores.length;n++)//for each person 's every score
-                    {
-                        console.log("content : "+Votes.Votes[i].VoteStatus[q].Scores[n].PersonContent );
-                        if(Votes.Votes[i].VoteStatus[q].Scores[n].PersonContent ==_PPContent)//check if the score is for current content
-                        {
-                            flag = 1;
-                            var _PersonScore = Votes.Votes[i].VoteStatus[q].Scores[n].Score;
-                            var col =     $("<td></td>");
-                            var colcontent = $("<label></label>").text(_PersonScore);
-                            col.append(colcontent);
-                            row.append(col);
-                            break;
-                        }
-                    }
-                    if(flag==0)//not scored
-                    {
-                        var col =     $("<td></td>");
-                        var colcontent = $("<label></label>").text("None");
-                        col.append(colcontent);
-                        row.append(col);
-                    }
-                }
-                $("#TableBody").append(row);
-            }
-            break;
+            return Scores[i].Score;
         }
     }
-
+  };
+});
+MainApp.controller('userCtrl',function($scope,$http){
+   $scope.GetAllVotes = function(){
+    $http.get("GetAllVoteContent").success(function(result){
+       $scope.Votes =result.Votes;
+       var LatestIndex = $scope.Votes.length-1;
+       $scope.VoteStatus = $scope.Votes[LatestIndex].VoteStatus;
+       $scope.Persons = $scope.Votes[LatestIndex].Persons;
+       $scope.SelectedDate = $scope.Votes[LatestIndex].Date;
+       $scope. RefreshTable();
+    });
+    };
+     $scope.GetAllVotes();
+    $scope.RefreshTable = function(){
+    console.log("refresh table!!!");
+    for(var i = 0; i<  $scope.Votes.length ; i++)
+    {
+        if($scope.Votes[i].Date == $scope.SelectedDate)
+        {
+            $scope.VoteStatus = $scope.Votes[i].VoteStatus;
+            $scope.Persons = $scope.Votes[i].Persons;
+        }
+    }
 };
+});
 var SortPersons= function(Persons){
        for(var i = 1;i<Persons.length;i++)
        {
