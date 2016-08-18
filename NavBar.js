@@ -17,7 +17,7 @@ var NavBar = "<div class='navbar-header' id='LogoImg'>\
                </span>\
 </div>\
 </div>\
-<div   id='UserName'  style='float:right'>\
+<div   id='UserName'  style='float:right ;margin-right:50px;'>\
  <ul class='nav navbar-nav'>\
  <li class='dropdown'>\
     <a href='#' class='dropdown-toggle navbar-brand' data-toggle='dropdown'  id = 'UserNameLabel'>\
