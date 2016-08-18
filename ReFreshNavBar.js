@@ -4,7 +4,7 @@ $.get("GetUserInfo",function(result){
         console.log(obj);
         if(obj.UserName!="")//logind before
         {
-                $("#UserNameLabel")[0].innerHTML=obj.UserName ;
+                $("#UserNameLabel").text(obj.UserName) ;
                 $("#UserName").removeAttr("hidden");
                 $("#LoginBtn").attr("hidden","hidden");
                 $("#LogOutBtn").removeAttr("hidden");
