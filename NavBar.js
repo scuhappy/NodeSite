@@ -4,6 +4,9 @@ var NavBar = "<div class='navbar-header' id='LogoImg'>\
 <div class='navbar-header' id='HomeBtn'>\
   <a class='navbar-brand' href='index.html' >Home</a>\
 </div>\
+<div class='navbar-header' id='JoinVoteBtn'>\
+  <a class='navbar-brand' href='JoinVotePage.html' >Vote</a>\
+</div>\
 <div  class = 'navbar-header' >\
 <div  class='input-group' style=' width:500px;margin-top:10px;'>\
                <input type='text' class='form-control'>\
