@@ -20,9 +20,63 @@
   <body >
   <nav class="navbar navbar-default" role="navigation" id ="MainNavBar">
   </nav>
-    <div style = "float:right; margin-right:50px;">
-        <button class="btn btn-lg btn-default" id="NewPostBtn" onclick="NewPost">New Post</button>
-    </div>
+  <div class="row" style= "margin-left:200px;margin-right:200px;">
+  <div class="list-group col-lg-2" style=" width:300px;">
+     <a href="#" class="list-group-item active">
+        <h4 class="list-group-item-heading">
+           2016
+        </h4>
+     </a>
+     <a href="#" class="list-group-item">
+        <h4 class="list-group-item-heading">
+           Auguest
+        </h4>
+        <p class="list-group-item-text">
+
+        </p>
+     </a>
+     <a href="#" class="list-group-item">
+        <h4 class="list-group-item-heading">
+          July
+        </h4>
+        <p class="list-group-item-text">
+
+        </p>
+     </a>
+  </div>
+  <div class = "col-lg-2">
+      <div >
+          <button class="btn btn-lg btn-default" id="NewPostBtn" onclick="window.location = 'NewPostPage.html'">New Post</button>
+      </div>
+      <table class="table table-striped" style="margin-top:20px;width:700px;">
+         <thead>
+            <tr>
+               <th style="width:500px">File Name</th>
+               <th>Author</th>
+               <th>Date</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td><a href="#">Tanmay</a></td>
+               <td>Bangalore</td>
+               <td>560001</td>
+            </tr>
+            <tr>
+               <td>Sachin</td>
+               <td>Mumbai</td>
+               <td>400003</td>
+            </tr>
+            <tr>
+               <td>Uma</td>
+               <td>Pune</td>
+               <td>411027</td>
+            </tr>
+         </tbody>
+      </table>
+  </div>
+
+</div>
 
 
      <script src="node_modules/jquery/dist/jquery.min.js"></script>

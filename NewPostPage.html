@@ -5,19 +5,54 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>New a Post</title>
 
+
+    <title>Thorlabs Software Team</title>
+
+    <!-- Bootstrap core CSS -->
         <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="node_modules/summernote/dist/summernote.css" rel="stylesheet">
         <link href="css/MyCss.css" rel="stylesheet" >
   </head>
 
-  <body>
+  <body >
   <nav class="navbar navbar-default" role="navigation" id ="MainNavBar">
   </nav>
+  <div style="margin-left:200px;">
+    <button class="btn btn-lg btn-default" onclick="SubmitPost();">Submit</button>
+  </div>
+  <div style="margin-left:200px;margin-right:200px;margin-top:20px">
+    <input  id= "Title" type="text" class="form-control"  style="margin-right:0px;" placeholder="Please input Title.">
+  </div>
+  <div style="margin-left:200px;margin-right:200px;margin-top:20px">
+  <div id="summernote" ><p>Hello World</p></div>
+  </div>
 
-
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
      <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+      <script src="node_modules/summernote/dist/summernote.js"></script>
+
+    <script>
+      $(document).ready(function() {
+          $('#summernote').summernote({
+          height: 300,                 // set editor height
+          minHeight: null,             // set minimum height of editor
+          maxHeight: null,             // set maximum height of editor
+          focus: true                  // set focus to editable area after initializing summernote
+        });
+      });
+      var SubmitPost = function(){
+        console.log("nnnn");
+        console.log($('#summernote').summernote('code'));
+        var data ={'Title':$('#Title').text(),'Content':$('#summernote').summernote('code')};
+        $.post("PostArticle",data,function(err,docs){
+
+    });
+    }
+    </script>
     <script  src="NavBar.js" ></script>
      <script src="ReFreshNavBar.js" >
     </script>

@@ -38,8 +38,15 @@ var VotesScheMa = new Schema({
                                                  Score:String}]
                                      }]
                              });
+var ArticleScheMa = new Schema({
+                                    Title:String,
+                                    Content:String,
+                                    Author:String,
+                                    Date:String
+                               });
 var DBUser = dbTest.model('User',userScheMa,'Users');
 var DBVotes = dbTest.model('Vote',VotesScheMa,'Votes');
+var DBArticle = dbTest.model('Article',ArticleScheMa,'Articles');
 
 app.use(cookieParser());
 app.use(express.static(__dirname + '/'));
@@ -241,11 +248,21 @@ app.post('/SignUp',urlencodeParser,function(request,response){
             });
         }
     });
-
-
-
 });
-var server = app.listen(80,"127.0.0.1", function () {
+app.post('/PostArticle',urlencodeParser,function(request,response){
+    console.log("Post article received!");
+    var obj = JSON.parse(request.body.data);
+    obj.Author = request.cookies.UserName;
+    obj.Date  = new Date();
+    DBArticle.create(obj,function(err,small){
+        if(!err)
+        {
+            console.log("Saved!");
+        }
+        response.end();
+    });
+});
+var server = app.listen(8080,"127.0.0.1", function () {
 
     var host = server.address().address;
     var port = server.address().port;

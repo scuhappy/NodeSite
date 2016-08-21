@@ -1,14 +1,9 @@
-var NavBar = "<div class='navbar-header' id='LogoImg'>\
-<img src='Resources/Logo.PNG ' >\
-</div>\
-<div class='navbar-header' id='HomeBtn'>\
-  <a class='navbar-brand' href='index.html' >Home</a>\
-</div>\
-<div class='navbar-header' id='JoinVoteBtn'>\
-  <a class='navbar-brand' href='JoinVotePage.html' >Vote</a>\
+var NavBar = "\
+<div class='navbar-header' id='LogoImg' style='margin-left:200px;'>\
+<a href='index.html'><img src='Resources/Logo.PNG '></a>\
 </div>\
 <div  class = 'navbar-header' >\
-<div  class='input-group' style=' width:500px;margin-top:10px;'>\
+<div  class='input-group' style=' width:500px;margin-top:10px;margin-left:50px;'>\
                <input type='text' class='form-control'>\
                <span class='input-group-btn'>\
                   <button class='btn btn-default' type='button'>\
@@ -16,6 +11,9 @@ var NavBar = "<div class='navbar-header' id='LogoImg'>\
                   </button>\
                </span>\
 </div>\
+</div>\
+<div class='navbar-header' id='JoinVoteBtn' style='float:left;' >\
+  <a class='navbar-brand' href='JoinVotePage.html' >Vote</a>\
 </div>\
 <div   id='UserName'  style='float:right ;margin-right:50px;'>\
  <ul class='nav navbar-nav'>\
@@ -35,12 +33,11 @@ var NavBar = "<div class='navbar-header' id='LogoImg'>\
 </li>\
 </ul>\
 </div>\
- <div class='navbar-header' id='LoginBtn' style='float:right'>\
-    <a class='navbar-brand' href='LoginPage.html' >Sign in</a>\
- </div>\
-  </div>\
- <div class='navbar-header' id='SignUpBtn' style='float:right'>\
+ <div class='navbar-header' id='SignUpBtn' style='float:right;margin-right:200px;'>\
     <a class='navbar-brand' href='SignUpPage.html'>Sign up</a>\
+ </div>\
+ <div class='navbar-header' id='LoginBtn' style='float:right;'>\
+    <a class='navbar-brand' href='LoginPage.html' >Sign in</a>\
  </div>"
 var AddNavBar  = function(){
     $("#MainNavBar").append(NavBar);
