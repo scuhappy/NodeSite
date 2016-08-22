@@ -88,6 +88,7 @@
     <script>
     $("#input-1").fileinput({
         uploadUrl: "/PostAttachments", // server upload action
+        deleteUrl: "/site/file-delete",
         uploadAsync: true,
         maxFileCount: 5
     });
