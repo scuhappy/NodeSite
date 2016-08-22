@@ -277,15 +277,17 @@ var storage =   multer.diskStorage({
      callback(null, file.originalname);
    }
 });
-var upload = multer({ storage : storage }).array('userPhoto',2);
-app.post('/api/photo',function(req,res){
+var upload = multer({ storage : storage }).array('Attachments',2);
+app.post('/PostAttachments',function(req,res){
+    console.log("Post Attachments received!");
      upload(req,res,function(err) {
-//         console.log(req.body);
-//         console.log(req.files);
+         console.log(req.body);
+         console.log(req.files);
          if(err) {
+             console.log(err);
              return res.end("Error uploading file.");
          }
-         res.end("File is uploaded");
+         res.end(JSON.stringify({'Success':'File is uploaded'}));
      });
 });
 var server = app.listen(80,"127.0.0.1", function () {

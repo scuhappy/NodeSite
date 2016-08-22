@@ -29,8 +29,8 @@
   <div id="summernote" ><p>Hello World</p></div>
   </div>
 <div  style="margin-left:200px;margin-right:200px;margin-top:20px;">
-    <label class="control-label">Select File</label>
-  <input type="file" class="file" />
+<label class="control-label">Select files</label>
+<input id="input-1" name="Attachments" type="file" multiple class="file-loading">
 </div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -39,25 +39,8 @@
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
       <script src="node_modules/summernote/dist/summernote.js"></script>
       <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
-      <script src="node_modules/uploadify/jquery.uploadify.min.js"></script>
       <script src="node_modules/fileinput/js/fileinput.min.js"></script>
       <script>
-      $(document).ready(function() {
-         $('#uploadForm').submit(function() {
-            $("#status").empty().text("File is uploading...");
-            $(this).ajaxSubmit({
-                error: function(xhr) {
-              status('Error: ' + xhr.status);
-                },
-                success: function(response) {
-            console.log(response)
-                $("#status").empty().text(response);
-                }
-        });
-        return false;
-        });
-   });
-
       $(document).ready(function() {
           $('#summernote').summernote({
           height: 300,                 // set editor height
@@ -77,7 +60,8 @@
         'Attachements':[],
         'Imgs':[]};
         $.post("PostArticle",{'data':JSON.stringify(data)},function(err,docs){
-            window.location.href = "PostMainPage.html";
+                $("#input-1").fileinput('upload');
+                window.location.href = "PostMainPage.html";
     });
     }
     function sendFile(files) {
@@ -100,6 +84,13 @@
     </script>
     <script  src="NavBar.js" ></script>
      <script src="ReFreshNavBar.js" >
+    </script>
+    <script>
+    $("#input-1").fileinput({
+        uploadUrl: "/PostAttachments", // server upload action
+        uploadAsync: true,
+        maxFileCount: 5
+    });
     </script>
     <script>
     AddNavBar();
