@@ -109,6 +109,7 @@ app.get('/GetArticles',function(request,response){
         response.end();
     });
 });
+
 app.get('/GetUserList',function(resquest,response){
     var  UserNames=[];
     DBUser.find({},function(err,docs){
@@ -273,6 +274,14 @@ app.post('/PostArticle',urlencodeParser,function(request,response){
         {
             console.log("Saved!");
         }
+        response.end();
+    });
+});
+app.post('/EditAPost',urlencodeParser,function(request,response){
+   console.log(request.body.data);
+    DBArticle.find({_id:request.body.data},function(err,docs){
+       console.log(JSON.stringify(docs[0]));
+        response.write();
         response.end();
     });
 });
