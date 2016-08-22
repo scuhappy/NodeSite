@@ -17,7 +17,7 @@
                 <link href="css/MyCss.css" rel="stylesheet" >
   </head>
 
-  <body >
+  <body ng-app="PostMainApp" ng-controller="MainPostCtrl">
   <nav class="navbar navbar-default" role="navigation" id ="MainNavBar">
   </nav>
   <div class="row" style= "margin-left:200px;margin-right:200px;">
@@ -57,20 +57,10 @@
             </tr>
          </thead>
          <tbody>
-            <tr>
-               <td><a href="#">Tanmay</a></td>
-               <td>Bangalore</td>
-               <td>560001</td>
-            </tr>
-            <tr>
-               <td>Sachin</td>
-               <td>Mumbai</td>
-               <td>400003</td>
-            </tr>
-            <tr>
-               <td>Uma</td>
-               <td>Pune</td>
-               <td>411027</td>
+            <tr ng-repeat="article in Articles">
+               <td><a href="#">{{article.Title}}</a></td>
+               <td>{{article.Author}}</td>
+               <td>{{article.Date}}</td>
             </tr>
          </tbody>
       </table>
@@ -81,10 +71,23 @@
 
      <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="node_modules/angular/angular.min.js"></script>
     <script  src="NavBar.js" ></script>
      <script src="ReFreshNavBar.js" >
     </script>
     <script>
+    var PostApp=angular.module('PostMainApp', []);
+    PostApp.controller('MainPostCtrl',function($scope,$http,$filter){
+
+        $scope.GetArticles = function(){
+        $http.get('GetArticles').success(function(response){
+        $scope.Articles = response.data;
+    });
+    };
+    $scope.GetArticles();
+
+});
 
     </script>
     <script>

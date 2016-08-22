@@ -45,7 +45,9 @@ var ArticleScheMa = new Schema({
                                     Title:String,
                                     Content:String,
                                     Author:String,
-                                    Date:String
+                                    Date:String,
+                                    Imgs:[{src:String}],
+                                    Attachments:[{src:String}]
                                });
 var DBUser = dbTest.model('User',userScheMa,'Users');
 var DBVotes = dbTest.model('Vote',VotesScheMa,'Votes');
@@ -98,7 +100,14 @@ function AddUser(UserName,password,role,callback){
 };
 
 app.get('/',function(request,response){
-	
+
+});
+app.get('/GetArticles',function(request,response){
+    var articles = [];
+    DBArticle.find({},function(err,docs){
+        response.write(JSON.stringify({'data':docs}));
+        response.end();
+    });
 });
 app.get('/GetUserList',function(resquest,response){
     var  UserNames=[];
@@ -109,7 +118,7 @@ app.get('/GetUserList',function(resquest,response){
                UserNames[i] = docs[i].UserName;
            }
            console.log(UserNames);
-           response.write(UserNames.join(" "));
+           //response.write(UserNames.join(" "));
            response.end();
     });
 
@@ -259,13 +268,13 @@ app.post('/PostArticle',urlencodeParser,function(request,response){
     obj.Author = request.cookies.UserName;
     console.log(JSON.stringify(obj));
     response.end();
-//    DBArticle.create(obj,function(err,small){
-//        if(!err)
-//        {
-//            console.log("Saved!");
-//        }
-//        response.end();
-//    });
+    DBArticle.create(obj,function(err,small){
+        if(!err)
+        {
+            console.log("Saved!");
+        }
+        response.end();
+    });
 });
 
 var multer  = require('multer');
@@ -290,7 +299,7 @@ app.post('/PostAttachments',function(req,res){
          res.end(JSON.stringify({'Success':'File is uploaded'}));
      });
 });
-var server = app.listen(80,"127.0.0.1", function () {
+var server = app.listen(8080,"127.0.0.1", function () {
 
     var host = server.address().address;
     var port = server.address().port;

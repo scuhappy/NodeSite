@@ -51,9 +51,10 @@
       });
 
       var SubmitPost = function(){
-      var _date = new Date();
+      var _date = new Date().toLocaleDateString();
+      console.log(_date);
         var data ={
-        'Title':$('#Title').text(),
+        'Title':$('#Title').val(),
         'Content':$('#summernote').summernote('code'),
         'Date':_date,
         'Author':'',
@@ -63,6 +64,7 @@
                 $("#input-1").fileinput('upload');
                 window.location.href = "PostMainPage.html";
     });
+
     }
     function sendFile(files) {
          oMyForm = new FormData();
