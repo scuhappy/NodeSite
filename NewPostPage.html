@@ -13,6 +13,7 @@
         <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="node_modules/summernote/dist/summernote.css" rel="stylesheet">
         <link href="css/MyCss.css" rel="stylesheet" >
+        <link href = "node_modules/fileinput/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" >
   </head>
 
   <body >
@@ -24,18 +25,39 @@
   <div style="margin-left:200px;margin-right:200px;margin-top:20px">
     <input  id= "Title" type="text" class="form-control"  style="margin-right:0px;" placeholder="Please input Title.">
   </div>
-  <div style="margin-left:200px;margin-right:200px;margin-top:20px">
+  <div style="margin-left:200px;margin-right:200px;margin-top:20px;">
   <div id="summernote" ><p>Hello World</p></div>
   </div>
-
+<div  style="margin-left:200px;margin-right:200px;margin-top:20px;">
+    <label class="control-label">Select File</label>
+  <input type="file" class="file" />
+</div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
      <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
       <script src="node_modules/summernote/dist/summernote.js"></script>
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
+      <script src="node_modules/uploadify/jquery.uploadify.min.js"></script>
+      <script src="node_modules/fileinput/js/fileinput.min.js"></script>
+      <script>
+      $(document).ready(function() {
+         $('#uploadForm').submit(function() {
+            $("#status").empty().text("File is uploading...");
+            $(this).ajaxSubmit({
+                error: function(xhr) {
+              status('Error: ' + xhr.status);
+                },
+                success: function(response) {
+            console.log(response)
+                $("#status").empty().text(response);
+                }
+        });
+        return false;
+        });
+   });
 
-    <script>
       $(document).ready(function() {
           $('#summernote').summernote({
           height: 300,                 // set editor height
@@ -44,13 +66,36 @@
           focus: true                  // set focus to editable area after initializing summernote
         });
       });
-      var SubmitPost = function(){
-        console.log("nnnn");
-        console.log($('#summernote').summernote('code'));
-        var data ={'Title':$('#Title').text(),'Content':$('#summernote').summernote('code')};
-        $.post("PostArticle",data,function(err,docs){
 
+      var SubmitPost = function(){
+      var _date = new Date();
+        var data ={
+        'Title':$('#Title').text(),
+        'Content':$('#summernote').summernote('code'),
+        'Date':_date,
+        'Author':'',
+        'Attachements':[],
+        'Imgs':[]};
+        $.post("PostArticle",{'data':JSON.stringify(data)},function(err,docs){
+            window.location.href = "PostMainPage.html";
     });
+    }
+    function sendFile(files) {
+         oMyForm = new FormData();
+         oMyForm.append("file", files[0]);
+         oMyForm.append("type","1");
+         oMyForm.append("from","2");
+         $.ajax({
+             data: oMyForm,
+             type: "POST",
+             url: "${pageContext.request.contextPath}/fileManager/doUpload",
+             contentType: false,
+             cache: false,
+             processData: false,
+             success: function(data) {
+                 $(".summernote").summernote('insertImage', url, filename);
+             }
+             });
     }
     </script>
     <script  src="NavBar.js" ></script>

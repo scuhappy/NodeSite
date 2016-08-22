@@ -15,7 +15,7 @@ var NavBar = "\
 <div class='navbar-header' id='JoinVoteBtn' style='float:left;' >\
   <a class='navbar-brand' href='JoinVotePage.html' >Vote</a>\
 </div>\
-<div   id='UserName'  style='float:right ;margin-right:50px;'>\
+<div   id='UserName'  style='float:right ;margin-right:200px;'>\
  <ul class='nav navbar-nav'>\
  <li class='dropdown'>\
     <a href='#' class='dropdown-toggle navbar-brand' data-toggle='dropdown'  id = 'UserNameLabel'>\

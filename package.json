@@ -1,0 +1,18 @@
+{
+  "name": "PostSystem",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node VoteServer.js"
+  },
+  "dependencies": {
+    "express": "latest",
+    "static-favicon": "latest",
+    "morgan": "latest",
+    "cookie-parser": "latest",
+    "body-parser": "latest",
+    "debug": "latest",
+    "ejs": "latest",
+    "formidable" : "latest"
+  }
+}
