@@ -12,22 +12,20 @@
 <body  >
 <nav class="navbar navbar-default" role="navigation" id ="MainNavBar">
 </nav>
-<form role="form"  class="form-horizontal">
-	<div class="form-group">
-		<label  class="col-sm-2 control-label"><h3>Login</h3></label>
-	</div>
-   <div class="form-group" >
-      <label for="name"  class="col-sm-2 control-label">User Name</label>
-      <div class="col-sm-10"><input type="text" class="form-control" id="name" placeholder="Enter the Name" style="width:150px;"></div>
-   </div>
-   <div class="form-group" >
-      <label for="Password"  class="col-sm-2 control-label">Password</label>
-      <div class="col-sm-10"><input type="password" class="form-control" id="Password" placeholder="Enter the Password" style="width:150px;"></div>
-   </div>
-   <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-         <button type="submit" class="btn btn-default" onclick="LoginFunc()">Login</button>
-      </div>
+<form role="form"  class="form-horizontal" style="float:right;margin-right:200px;background-color:white; width:400px; height:300px;">
+<div>
+<label  class="control-label" style="margin-left:40px;"><h3>Login</h3></label>
+</div>
+<div style="margin-top:20px;margin-left:40px;">
+<div class="input-group">
+    <img src="Resources/UserIco.png" style="float:left;"></span>
+    <input type="text" class="form-control" id="name" placeholder="Enter the Name" style="width:200px;">
+</div>
+<div class="input-group" style="margin-top:10px;">
+    <img  src="Resources/PswIco.png" style="float:left;"></img>
+    <input type="password" class="form-control" id="Password" placeholder="Enter the Password" style="width:200px;">
+</div>
+ <button type="submit" class="btn btn-default" onclick="LoginFunc()" style="width=200px;margin-top:10px;">Login</button>
    </div>
 </form>
  <!-- Bootstrap core JavaScript
