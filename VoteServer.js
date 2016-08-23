@@ -11,6 +11,7 @@ var urlencodeParser = bodyParser.urlencoded({extended: true});
 
 
 var mongoose = require('mongoose');
+var ObjectId = require('mongoose').Types.ObjectId;
 var DBTesturl = 'mongodb://localhost:27017/Test';
 var dbTest = mongoose.connect(DBTesturl,function(err){
     if(!err)
@@ -277,13 +278,27 @@ app.post('/PostArticle',urlencodeParser,function(request,response){
         response.end();
     });
 });
-app.post('/EditAPost',urlencodeParser,function(request,response){
-   console.log(request.body.data);
-    DBArticle.find({_id:request.body.data},function(err,docs){
-       console.log(JSON.stringify(docs[0]));
-        response.write();
-        response.end();
+app.post('/EditArticle',urlencodeParser,function(request,response){
+    console.log("Edit article received!");
+    var obj = JSON.parse(request.body.data);
+    DBArticle.update({_id:obj._id},obj,function(err){
+        if(!err)
+        {
+            response.end();
+        }
     });
+});
+app.post('/GetArticle',urlencodeParser,function(request,response){
+    console.log("Get A Article received!");
+    var obj = request.body;
+    var id = obj.data;
+    console.log("Article id  = "+ id);
+    DBArticle.find({_id:id},function(err,docs){
+        console.log(docs);
+        response.write(JSON.stringify(docs[0]));
+       response.end();
+    });
+
 });
 
 var multer  = require('multer');
@@ -308,7 +323,7 @@ app.post('/PostAttachments',function(req,res){
          res.end(JSON.stringify({'Success':'File is uploaded'}));
      });
 });
-var server = app.listen(8080,"127.0.0.1", function () {
+var server = app.listen(80,"127.0.0.1", function () {
 
     var host = server.address().address;
     var port = server.address().port;

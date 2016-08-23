@@ -78,8 +78,7 @@
     </script>
     <script>
     var PostApp=angular.module('PostMainApp', []);
-    PostApp.controller('MainPostCtrl',function($scope,$http,$filter){
-
+    PostApp.controller('MainPostCtrl',function($scope,$http){
         $scope.GetArticles = function(){
         $http.get('GetArticles').success(function(response){
         $scope.Articles = response.data;
@@ -88,9 +87,7 @@
     $scope.GetArticles();
     $scope.OpenEdit = function(article){
         console.log(article._id);
-        $.post('EditAPost',{data:article._id},function(result){
-
-        });
+        window.location.href= "EditArticlePage.html#?id="+article._id;
     }
 });
 
