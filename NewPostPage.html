@@ -30,7 +30,7 @@
   </div>
 <div  style="margin-left:200px;margin-right:200px;margin-top:20px;">
 <label class="control-label">Select files</label>
-<input id="input-1" name="Attachments" type="file" multiple class="file-loading">
+<input id="input-1" name="Attachments" type="file" multiple class="file">
 </div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -51,20 +51,30 @@
       });
 
       var SubmitPost = function(){
-      var _date = new Date().toLocaleDateString();
-      console.log(_date);
-        var data ={
-        'Title':$('#Title').val(),
-        'Content':$('#summernote').summernote('code'),
-        'Date':_date,
-        'Author':'',
-        'Attachements':[],
-        'Imgs':[]};
-        $.post("PostArticle",{'data':JSON.stringify(data)},function(err,docs){
-                $("#input-1").fileinput('upload');
-                window.location.href = "PostMainPage.html";
-    });
+          $('#input-1').fileinput('upload');
     }
+    $('#input-1').on('filebatchuploadsuccess', function(event, data, previewId, index) {
+        var  FileAry = data.response.Files;
+        console.log('filebatchuploadsuccess ',JSON.stringify(FileAry));
+       var attachments = [];
+         for(var i=0;i<FileAry.length;i++)
+        {
+            var attach = {'src':FileAry[i].path}
+            attachments[attachments.length]=attach;
+        }
+        var _date = new Date().toLocaleDateString();
+        console.log(_date);
+          var data ={
+          'Title':$('#Title').val(),
+          'Content':$('#summernote').summernote('code'),
+          'Date':_date,
+          'Author':'',
+          'Attachments':attachments,
+          'Imgs':[]};
+          $.post("PostArticle",{'data':JSON.stringify(data)},function(err,docs){
+                  window.location.href = "PostMainPage.html";
+      });
+    });
     /*
     function sendFile(files) {
          oMyForm = new FormData();
@@ -92,8 +102,10 @@
     $("#input-1").fileinput({
         uploadUrl: "/PostAttachments", // server upload action
         deleteUrl: "/site/file-delete",
-        uploadAsync: true,
-        maxFileCount: 5
+        uploadAsync : false,
+        maxFileCount: 10,
+        showPreview:false,
+        showUpload: false,
     });
     </script>
     <script>

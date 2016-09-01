@@ -269,7 +269,6 @@ app.post('/PostArticle',urlencodeParser,function(request,response){
     console.log(obj);
     obj.Author = request.cookies.UserName;
     console.log(JSON.stringify(obj));
-    response.end();
     DBArticle.create(obj,function(err,small){
         if(!err)
         {
@@ -310,7 +309,7 @@ var storage =   multer.diskStorage({
      callback(null, file.originalname);
    }
 });
-var upload = multer({ storage : storage }).array('Attachments',2);
+var upload = multer({ storage : storage }).array('Attachments',10);
 app.post('/PostAttachments',function(req,res){
     console.log("Post Attachments received!");
      upload(req,res,function(err) {
@@ -320,7 +319,7 @@ app.post('/PostAttachments',function(req,res){
              console.log(err);
              return res.end("Error uploading file.");
          }
-         res.end(JSON.stringify({'Success':'File is uploaded'}));
+         res.end(JSON.stringify({'Success':'File is uploaded','Files':req.files}));
      });
 });
 var server = app.listen(80,"127.0.0.1", function () {
