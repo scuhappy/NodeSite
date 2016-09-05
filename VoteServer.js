@@ -8,6 +8,9 @@ var cookieParser = require('cookie-parser');
 var multer  = require('multer');
 var urlencodeParser = bodyParser.urlencoded({extended: true});
 
+app.use(cookieParser());
+app.use(express.static(__dirname + '/'));
+app.use(bodyParser.urlencoded({extended:false}));
 
 
 var mongoose = require('mongoose');
@@ -54,9 +57,6 @@ var DBUser = dbTest.model('User',userScheMa,'Users');
 var DBVotes = dbTest.model('Vote',VotesScheMa,'Votes');
 var DBArticle = dbTest.model('Article',ArticleScheMa,'Articles');
 
-app.use(cookieParser());
-app.use(express.static(__dirname + '/'));
-app.use(bodyParser.urlencoded({extended:false}));
 
 
 var CurrentVote={"VoteNumber":"","Person":[],"VoteCreateDate":""};
